@@ -5,40 +5,33 @@ import { Analysis } from '../types/analysis';
 import {
   History,
   Search,
-  Filter,
+  Trash2,
+  ChevronRight,
   ShieldCheck,
   ShieldAlert,
   AlertTriangle,
-  ArrowRight,
-  Trash2,
-  Bookmark,
+  Building2,
   Calendar,
-  Building,
+  Sparkles,
+  ArrowUpDown,
+  FileText,
 } from 'lucide-react';
 
 export const HistoryPage: React.FC = () => {
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [classification, setClassification] = useState('ALL');
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [filter, setFilter] = useState<'ALL' | 'LIKELY_GENUINE' | 'NEEDS_CAUTION' | 'LIKELY_FRAUDULENT'>('ALL');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const fetchHistory = async () => {
-    setLoading(true);
     try {
-      const res = await analysisService.getAnalyses({
-        page,
-        limit: 10,
-        classification: classification !== 'ALL' ? classification : undefined,
-        search: search.trim() || undefined,
-      });
+      const res = await analysisService.getAnalyses({ limit: 50 });
       if (res.success) {
         setAnalyses(res.data || []);
-        setTotalPages(res.meta.totalPages || 1);
       }
     } catch (err) {
-      console.error('History fetch error:', err);
+      console.error('Failed to load history:', err);
     } finally {
       setLoading(false);
     }
@@ -46,196 +39,229 @@ export const HistoryPage: React.FC = () => {
 
   useEffect(() => {
     fetchHistory();
-  }, [page, classification]);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPage(1);
-    fetchHistory();
-  };
+  }, []);
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this analysis record?')) return;
     try {
       await analysisService.deleteAnalysis(id);
-      setAnalyses((prev) => prev.filter((a) => (a._id || a.id) !== id));
+      setAnalyses((prev) => prev.filter((a) => (a.id || (a as any)._id) !== id));
+      setDeleteConfirmId(null);
     } catch (err) {
-      console.error('Delete error:', err);
+      console.error('Delete failed:', err);
     }
   };
 
-  const handleSave = async (id: string) => {
-    try {
-      await analysisService.saveAnalysis(id);
-      alert('Analysis result saved to bookmarks.');
-    } catch (err) {
-      console.error('Save error:', err);
-    }
-  };
+  const filtered = analyses.filter((item) => {
+    const titleMatch = (item.jobPost?.title || '').toLowerCase().includes(search.toLowerCase());
+    const compMatch = (item.jobPost?.companyName || '').toLowerCase().includes(search.toLowerCase());
+    const filterMatch = filter === 'ALL' || item.classification === filter;
+    return (titleMatch || compMatch) && filterMatch;
+  });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 font-sans">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-100 flex items-center gap-2.5">
-            <History className="w-6 h-6 text-cyan-400" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#0D121D] border border-slate-800">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs font-mono text-sky-400 font-semibold uppercase tracking-wider">
+            <History className="w-4 h-4" />
+            <span>Verification Audit Log</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-100">
             Analysis History
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Review and manage all previous job advertisements inspected by SafeHire.
+          <p className="text-xs text-slate-400">
+            Historical log of all job posts, recruiter messages, and fraud analyses evaluated on your account.
           </p>
         </div>
 
         <Link
           to="/analyze"
-          className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs shadow-md shadow-cyan-500/20 self-start sm:self-auto transition"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition shadow-sm font-sans shrink-0"
         >
-          + Analyze New Job
+          <Sparkles className="w-4 h-4 text-slate-950" />
+          <span>New Forensic Scan</span>
         </Link>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
-        <form onSubmit={handleSearchSubmit} className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#0D121D] border border-slate-800 text-xs">
+        <div className="relative flex-1">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by title or company..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-cyan-500 transition"
+            placeholder="Search by job title or company name..."
+            className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#080B11] border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500"
           />
-        </form>
+        </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Filter className="w-4 h-4 text-slate-400" />
-          <select
-            value={classification}
-            onChange={(e) => {
-              setClassification(e.target.value);
-              setPage(1);
-            }}
-            className="px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-cyan-500 transition"
+        <div className="flex items-center gap-1 font-mono text-[11px] overflow-x-auto pb-1 sm:pb-0">
+          <button
+            onClick={() => setFilter('ALL')}
+            className={`px-2.5 py-1 rounded-md transition ${
+              filter === 'ALL' ? 'bg-slate-800 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+            }`}
           >
-            <option value="ALL">All Classifications</option>
-            <option value="LIKELY_GENUINE">Likely Genuine (0-29)</option>
-            <option value="NEEDS_CAUTION">Needs Caution (30-59)</option>
-            <option value="LIKELY_FRAUDULENT">Likely Fraudulent (60-100)</option>
-          </select>
+            All ({analyses.length})
+          </button>
+          <button
+            onClick={() => setFilter('LIKELY_GENUINE')}
+            className={`px-2.5 py-1 rounded-md transition ${
+              filter === 'LIKELY_GENUINE'
+                ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30'
+                : 'text-emerald-400 hover:bg-emerald-500/10'
+            }`}
+          >
+            Verified
+          </button>
+          <button
+            onClick={() => setFilter('NEEDS_CAUTION')}
+            className={`px-2.5 py-1 rounded-md transition ${
+              filter === 'NEEDS_CAUTION'
+                ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30'
+                : 'text-amber-400 hover:bg-amber-500/10'
+            }`}
+          >
+            Caution
+          </button>
+          <button
+            onClick={() => setFilter('LIKELY_FRAUDULENT')}
+            className={`px-2.5 py-1 rounded-md transition ${
+              filter === 'LIKELY_FRAUDULENT'
+                ? 'bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30'
+                : 'text-rose-400 hover:bg-rose-500/10'
+            }`}
+          >
+            High Risk
+          </button>
         </div>
       </div>
 
-      {/* Analyses Table / Card List */}
-      {loading ? (
-        <div className="py-16 text-center text-xs text-slate-400">Loading scan history...</div>
-      ) : analyses.length === 0 ? (
-        <div className="p-12 rounded-2xl bg-slate-900/40 border border-slate-800 text-center space-y-3">
-          <History className="w-10 h-10 text-slate-600 mx-auto" />
-          <p className="text-sm font-semibold text-slate-300">No Job Scans Found</p>
-          <p className="text-xs text-slate-500">
-            No matching job scans were found for your current search criteria.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {analyses.map((item) => {
-            const job: any = item.jobPostId || item.jobPost;
-            const targetId = item._id || item.id!;
-            const isScam = item.classification === 'LIKELY_FRAUDULENT';
-            const isCaution = item.classification === 'NEEDS_CAUTION';
+      {/* Data Table */}
+      <div className="rounded-2xl bg-[#0D121D] border border-slate-800 overflow-hidden shadow-sm">
+        {loading ? (
+          <div className="py-20 text-center space-y-2 font-mono">
+            <div className="w-6 h-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs text-slate-400">Loading audit history...</p>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center space-y-2 font-sans">
+            <FileText className="w-10 h-10 text-slate-600 mx-auto" />
+            <h3 className="text-sm font-bold text-slate-200 font-mono">No History Matches</h3>
+            <p className="text-xs text-slate-400">
+              No historical verification records correspond with your filter settings.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs font-sans">
+              <thead className="bg-[#080B11] border-b border-slate-800 font-mono text-[11px] text-slate-400 uppercase">
+                <tr>
+                  <th className="px-5 py-3">Audited Job & Entity</th>
+                  <th className="px-4 py-3">Classification</th>
+                  <th className="px-4 py-3 text-right">Trust Score</th>
+                  <th className="px-4 py-3">Scanned Date</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/70">
+                {filtered.map((item) => {
+                  const targetId = item.id || (item as any)._id;
+                  const isGen = item.classification === 'LIKELY_GENUINE';
+                  const isCaut = item.classification === 'NEEDS_CAUTION';
+                  const isFr = item.classification === 'LIKELY_FRAUDULENT';
+                  const trustScore = 100 - item.riskScore;
 
-            return (
-              <div
-                key={targetId}
-                className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg"
-              >
-                <div className="space-y-1.5 flex-1 min-w-0">
-                  <div className="flex items-center gap-2.5">
-                    <span
-                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
-                        isScam
-                          ? 'bg-red-500/10 text-red-400 border-red-500/30'
-                          : isCaution
-                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                          : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                      }`}
-                    >
-                      Risk: {item.riskScore}/100
-                    </span>
-                    <h3 className="text-sm font-bold text-slate-100 truncate">
-                      {job?.title || 'Evaluated Job Submission'}
-                    </h3>
-                  </div>
+                  return (
+                    <tr key={targetId} className="hover:bg-[#111726]/60 transition-colors">
+                      <td className="px-5 py-3.5">
+                        <Link
+                          to={`/results/${targetId}`}
+                          className="font-bold text-slate-100 hover:text-sky-400 block transition truncate max-w-xs sm:max-w-md"
+                        >
+                          {item.jobPost?.title || 'Audited Job Listing'}
+                        </Link>
+                        <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5 font-mono">
+                          <Building2 className="w-3 h-3 text-slate-500" />
+                          {item.jobPost?.companyName || 'Unspecified Entity'}
+                        </span>
+                      </td>
 
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
-                    <span className="flex items-center gap-1 text-slate-300 font-medium">
-                      <Building className="w-3.5 h-3.5 text-cyan-400" />
-                      {job?.companyName || 'Unknown Employer'}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                      {new Date(item.createdAt).toLocaleDateString()}
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-500">
-                      Confidence: {item.confidence}%
-                    </span>
-                  </div>
-                </div>
+                      <td className="px-4 py-3.5 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${
+                            isGen
+                              ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                              : isCaut
+                              ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+                              : 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+                          }`}
+                        >
+                          {isGen ? 'VERIFIED' : isCaut ? 'CAUTION' : 'HIGH RISK'}
+                        </span>
+                      </td>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                  <button
-                    onClick={() => handleSave(targetId)}
-                    title="Bookmark Analysis"
-                    className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
-                  >
-                    <Bookmark className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(targetId)}
-                    title="Delete Record"
-                    className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-300 hover:text-red-400 transition"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                  <Link
-                    to={`/results/${targetId}`}
-                    className="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold flex items-center gap-1 transition"
-                  >
-                    <span>View Result</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+                      <td className="px-4 py-3.5 text-right font-mono whitespace-nowrap">
+                        <span
+                          className={`font-black text-sm ${
+                            isGen ? 'text-emerald-400' : isCaut ? 'text-amber-400' : 'text-rose-400'
+                          }`}
+                        >
+                          {trustScore}
+                        </span>
+                        <span className="text-[10px] text-slate-600">/100</span>
+                      </td>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-4">
-          <button
-            disabled={page <= 1}
-            onClick={() => setPage(page - 1)}
-            className="px-3 py-1 rounded-lg bg-slate-800 text-xs text-slate-300 hover:bg-slate-700 disabled:opacity-40"
-          >
-            Previous
-          </button>
-          <span className="text-xs text-slate-400">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page >= totalPages}
-            onClick={() => setPage(page + 1)}
-            className="px-3 py-1 rounded-lg bg-slate-800 text-xs text-slate-300 hover:bg-slate-700 disabled:opacity-40"
-          >
-            Next
-          </button>
-        </div>
-      )}
+                      <td className="px-4 py-3.5 font-mono text-[11px] text-slate-400 whitespace-nowrap">
+                        {new Date(item.createdAt).toLocaleDateString()}
+                      </td>
+
+                      <td className="px-4 py-3.5 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            to={`/results/${targetId}`}
+                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-[11px] transition"
+                          >
+                            Dossier
+                          </Link>
+
+                          {deleteConfirmId === targetId ? (
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => handleDelete(targetId)}
+                                className="px-2 py-0.5 rounded bg-rose-500 text-white text-[10px] font-mono font-bold"
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                onClick={() => setDeleteConfirmId(null)}
+                                className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] font-mono"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setDeleteConfirmId(targetId)}
+                              className="p-1 rounded text-slate-500 hover:text-rose-400 transition"
+                              title="Delete record"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
     </div>
   );

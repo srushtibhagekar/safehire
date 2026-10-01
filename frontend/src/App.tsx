@@ -4,6 +4,7 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { AdminRoute } from './components/common/AdminRoute';
+import { CommandPalette } from './components/common/CommandPalette';
 
 // Public Pages
 import { LandingPage } from './pages/LandingPage';
@@ -15,6 +16,7 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { AnalyzePage } from './pages/AnalyzePage';
 import { ResultPage } from './pages/ResultPage';
 import { ReportViewPage } from './pages/ReportViewPage';
+import { CompanyVerificationPage } from './pages/CompanyVerificationPage';
 
 // Protected User Pages
 import { DashboardPage } from './pages/DashboardPage';
@@ -30,7 +32,10 @@ import { AdminModelPage } from './pages/admin/AdminModelPage';
 
 export const App: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-200">
+      {/* Global Command Palette (Cmd+K / Ctrl+K) */}
+      <CommandPalette />
+
       <Navbar />
       
       <main className="flex-1">
@@ -39,6 +44,8 @@ export const App: React.FC = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/companies" element={<CompanyVerificationPage />} />
+          <Route path="/company-verify" element={<CompanyVerificationPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />

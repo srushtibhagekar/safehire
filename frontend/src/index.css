@@ -4,13 +4,17 @@
 
 @layer base {
   :root {
-    --background: #0B0F19; /* Cybersecurity Deep Slate */
-    --foreground: #F1F5F9;
-    --card: #111827;
+    --background: #080B11;
+    --foreground: #F8FAFC;
+    --card: #0D121D;
     --card-foreground: #F8FAFC;
-    --border: #1E293B;
+    --card-border: #182234;
+    --border: #1E2B42;
     --muted: #64748B;
     --muted-foreground: #94A3B8;
+    --surface: #121826;
+    --surface-hover: #1A2336;
+    --surface-active: #222E46;
   }
 
   .light {
@@ -18,69 +22,141 @@
     --foreground: #0F172A;
     --card: #FFFFFF;
     --card-foreground: #0F172A;
-    --border: #E2E8F0;
+    --card-border: #E2E8F0;
+    --border: #CBD5E1;
     --muted: #94A3B8;
-    --muted-foreground: #64748B;
+    --muted-foreground: #475569;
+    --surface: #F1F5F9;
+    --surface-hover: #E2E8F0;
+    --surface-active: #CBD5E1;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.011em;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
+  background: #23324C;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #334769;
 }
 
-/* Glassmorphism Card Utilities */
-.glass-panel {
-  background: rgba(17, 24, 39, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Precision Hairlines & Panels */
+.security-panel {
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
 }
 
-.light .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+.security-panel-interactive {
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glow-cyan {
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.25);
+.security-panel-interactive:hover {
+  border-color: #2D3E5E;
+  transform: translateY(-1px);
 }
 
-.glow-red {
-  box-shadow: 0 0 25px -5px rgba(239, 68, 68, 0.25);
+.light .security-panel-interactive:hover {
+  border-color: #94A3B8;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
 }
 
-.glow-green {
-  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.25);
+/* Security Status Glows */
+.badge-safe {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
-/* Print Styles for Report Page */
+.badge-caution {
+  background: rgba(245, 158, 11, 0.1);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.badge-fraud {
+  background: rgba(244, 63, 94, 0.1);
+  color: #FB7185;
+  border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+.badge-review {
+  background: rgba(14, 165, 233, 0.1);
+  color: #38BDF8;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+}
+
+/* Laser Scanner Animation */
+@keyframes laserSweep {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 96%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+.scanner-laser {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #0EA5E9, #38BDF8, #0EA5E9, transparent);
+  box-shadow: 0 0 15px #0EA5E9, 0 0 5px #38BDF8;
+  animation: laserSweep 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Grid overlay background */
+.bg-security-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+.light .bg-security-grid {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+
+/* Print Styles for Official Security Audit Dossier */
 @media print {
   body {
-    background: white !important;
-    color: black !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
   }
   .no-print {
     display: none !important;
@@ -88,9 +164,9 @@
   .print-only {
     display: block !important;
   }
-  .glass-panel {
+  .security-panel {
     background: transparent !important;
-    border: 1px solid #ddd !important;
+    border: 1px solid #CBD5E1 !important;
     box-shadow: none !important;
   }
 }

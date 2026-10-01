@@ -1,95 +1,141 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Loader2, Sparkles, Shield, Cpu, FileText, Search } from 'lucide-react';
+import {
+  Shield,
+  Search,
+  Cpu,
+  CheckCircle2,
+  Lock,
+  Globe,
+  DollarSign,
+  FileSearch,
+  Activity,
+} from 'lucide-react';
 
-interface AnalysisProgressProps {
-  onComplete?: () => void;
-}
-
-const STAGES = [
-  { id: 1, label: 'Preparing & tokenizing job submission', icon: FileText },
-  { id: 2, label: 'Linguistic cleaning & HTML normalization', icon: Search },
-  { id: 3, label: 'Extracting NLP & payment keyword signals', icon: Sparkles },
-  { id: 4, label: 'Checking domain & recruiter authenticity', icon: Shield },
-  { id: 5, label: 'Running TF-IDF & ML Classifier inference', icon: Cpu },
-  { id: 6, label: 'Calculating calibrated 0-100 risk score', icon: Shield },
-  { id: 7, label: 'Synthesizing Explainable AI indicators & advice', icon: CheckCircle2 },
+const SCAN_STAGES = [
+  {
+    id: 'entity',
+    title: 'Entity & Domain Validation',
+    detail: 'Checking corporate domain age, DNS MX records, and public registration.',
+    icon: Globe,
+  },
+  {
+    id: 'linguistics',
+    title: 'Linguistic Vector Embeddings',
+    detail: 'Evaluating NLP token distributions for urgency, coercion, and scam templates.',
+    icon: FileSearch,
+  },
+  {
+    id: 'financial',
+    title: 'Compensation & Payment Analysis',
+    detail: 'Scanning for advance fee demands, fake equipment checks, and salary anomalies.',
+    icon: DollarSign,
+  },
+  {
+    id: 'comms',
+    title: 'Communication Channel Verification',
+    detail: 'Detecting encrypted chat redirections (Telegram/WhatsApp) and spoofed emails.',
+    icon: Lock,
+  },
+  {
+    id: 'synthesis',
+    title: 'Threat Score & Dossier Synthesis',
+    detail: 'Calibrating multi-model confidence intervals and generating audit report.',
+    icon: Cpu,
+  },
 ];
 
-export const AnalysisProgress: React.FC<AnalysisProgressProps> = () => {
-  const [currentStage, setCurrentStage] = useState(0);
+export const AnalysisProgress: React.FC = () => {
+  const [activeStage, setActiveStage] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentStage((prev) => {
-        if (prev < STAGES.length - 1) {
-          return prev + 1;
-        }
+      setActiveStage((prev) => {
+        if (prev < SCAN_STAGES.length - 1) return prev + 1;
         return prev;
       });
-    }, 450);
+    }, 550);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="w-full max-w-lg mx-auto p-6 rounded-2xl bg-slate-900/95 border border-cyan-500/30 shadow-2xl shadow-cyan-500/10">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center border border-cyan-500/40 animate-pulse">
-          <Cpu className="w-5 h-5" />
+    <div className="relative rounded-2xl bg-[#0D121D] border border-slate-800 p-6 shadow-2xl space-y-6 overflow-hidden max-w-2xl mx-auto font-sans">
+      {/* Laser Sweep Effect */}
+      <div className="scanner-laser" />
+
+      {/* Header Telemetry */}
+      <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+            <Activity className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-100 font-mono tracking-tight">
+              SCANNING IN PROGRESS
+            </h3>
+            <p className="text-xs text-slate-400">SafeHire Multi-Stage Heuristic Engine v2.4</p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-base font-bold text-slate-100">SafeHire AI Inspection in Progress</h3>
-          <p className="text-xs text-slate-400">Processing text through NLP & ML pipeline</p>
-        </div>
+
+        <span className="text-xs font-mono text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2.5 py-1 rounded">
+          {Math.min(100, Math.round(((activeStage + 1) / SCAN_STAGES.length) * 100))}% COMPLETED
+        </span>
       </div>
 
-      {/* Progress Bar */}
-      <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-6">
-        <motion.div
-          className="h-full bg-gradient-to-r from-cyan-500 to-blue-600"
-          initial={{ width: '0%' }}
-          animate={{ width: `${((currentStage + 1) / STAGES.length) * 100}%` }}
-          transition={{ duration: 0.3 }}
-        />
-      </div>
-
-      {/* Steps List */}
+      {/* Stage Progression Checklist */}
       <div className="space-y-3">
-        {STAGES.map((stage, idx) => {
-          const isDone = idx < currentStage;
-          const isCurrent = idx === currentStage;
+        {SCAN_STAGES.map((stage, idx) => {
+          const isDone = idx < activeStage;
+          const isCurrent = idx === activeStage;
+          const isPending = idx > activeStage;
           const Icon = stage.icon;
 
           return (
             <div
               key={stage.id}
-              className={`flex items-center gap-3 text-xs transition-all duration-200 ${
+              className={`flex items-start gap-3 p-3 rounded-xl transition-all duration-200 border ${
                 isCurrent
-                  ? 'text-cyan-300 font-semibold translate-x-1'
+                  ? 'bg-sky-500/10 border-sky-500/30 text-white'
                   : isDone
-                  ? 'text-slate-400'
-                  : 'text-slate-600'
+                  ? 'bg-slate-900/40 border-slate-800/60 text-slate-300'
+                  : 'bg-transparent border-transparent opacity-40 text-slate-500'
               }`}
             >
-              <div className="w-5 h-5 flex items-center justify-center">
+              <div className="mt-0.5 shrink-0">
                 {isDone ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 ) : isCurrent ? (
-                  <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
+                  <div className="w-4 h-4 rounded-full border-2 border-sky-400 border-t-transparent animate-spin" />
                 ) : (
-                  <div className="w-2 h-2 rounded-full bg-slate-700" />
+                  <div className="w-4 h-4 rounded-full border border-slate-700" />
                 )}
               </div>
-              <span className="flex-1">{stage.label}</span>
-              {isCurrent && (
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400">
-                  Scanning
-                </span>
-              )}
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-200">{stage.title}</span>
+                  {isCurrent && (
+                    <span className="text-[10px] font-mono text-sky-400 animate-pulse uppercase">
+                      Auditing...
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-400 truncate mt-0.5">{stage.detail}</p>
+              </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Real-Time Processing Console Bar */}
+      <div className="p-3 rounded-lg bg-[#070A10] border border-slate-800/90 font-mono text-[11px] text-slate-400 flex items-center justify-between">
+        <span className="truncate">
+          &gt; evaluating token matrices: [weight_dim: 768, attention_heads: 12]
+        </span>
+        <span className="text-emerald-400 text-[10px] uppercase font-bold shrink-0 ml-2">
+          active
+        </span>
       </div>
     </div>
   );

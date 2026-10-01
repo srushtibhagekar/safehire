@@ -1,85 +1,125 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, AlertCircle, ShieldAlert, AlertTriangle, CheckCircle, Quote } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  AlertOctagon,
+  AlertTriangle,
+  Info,
+  ChevronDown,
+  ChevronUp,
+  FileCode,
+  ShieldCheck,
+  Search,
+} from 'lucide-react';
 import { FraudIndicator, SeverityType } from '../../types/analysis';
 
 interface IndicatorCardProps {
   indicator: FraudIndicator;
+  index?: number;
 }
 
-export const IndicatorCard: React.FC<IndicatorCardProps> = ({ indicator }) => {
-  const [expanded, setExpanded] = useState(true);
+export const IndicatorCard: React.FC<IndicatorCardProps> = ({ indicator, index = 0 }) => {
+  const [expanded, setExpanded] = useState(false);
 
   const getSeverityBadge = (severity: SeverityType) => {
     switch (severity) {
       case 'CRITICAL':
         return {
-          bg: 'bg-red-500/15 text-red-400 border-red-500/30',
-          icon: ShieldAlert,
-          label: 'Critical Warning',
+          label: 'CRITICAL SEVERITY',
+          icon: AlertOctagon,
+          classes: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+          borderLeft: 'border-l-rose-500',
         };
       case 'HIGH':
         return {
-          bg: 'bg-rose-500/15 text-rose-400 border-rose-500/30',
-          icon: AlertTriangle,
-          label: 'High Severity',
+          label: 'HIGH SEVERITY',
+          icon: AlertOctagon,
+          classes: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+          borderLeft: 'border-l-rose-500',
         };
       case 'MEDIUM':
         return {
-          bg: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-          icon: AlertCircle,
-          label: 'Medium Caution',
+          label: 'MEDIUM SEVERITY',
+          icon: AlertTriangle,
+          classes: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+          borderLeft: 'border-l-amber-500',
         };
       case 'LOW':
       default:
         return {
-          bg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-          icon: CheckCircle,
-          label: 'Standard Signal',
+          label: 'INFORMATIONAL / LOW',
+          icon: Info,
+          classes: 'bg-sky-500/10 text-sky-400 border-sky-500/30',
+          borderLeft: 'border-l-sky-500',
         };
     }
   };
 
-  const badge = getSeverityBadge(indicator.severity);
-  const Icon = badge.icon;
+  const sev = getSeverityBadge(indicator.severity);
+  const Icon = sev.icon;
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-700 transition overflow-hidden shadow-lg">
-      <button
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.2 }}
+      className={`rounded-xl bg-[#0D121D] border border-slate-800/90 border-l-4 ${sev.borderLeft} overflow-hidden shadow-sm hover:border-slate-700 transition`}
+    >
+      <div
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-800/40 transition"
+        className="p-4 cursor-pointer flex items-start justify-between gap-4 select-none"
       >
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-lg border ${badge.bg}`}>
-            <Icon className="w-4 h-4" />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold text-slate-100">{indicator.title}</h4>
-            <span className={`inline-block mt-0.5 text-[10px] font-bold px-2 py-0.2 rounded-full border ${badge.bg}`}>
-              {badge.label}
+        <div className="space-y-1.5 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono uppercase font-semibold border ${sev.classes}`}
+            >
+              <Icon className="w-3 h-3" />
+              {sev.label}
+            </span>
+            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
+              {indicator.type.replace(/_/g, ' ')}
             </span>
           </div>
+
+          <h4 className="text-sm font-semibold text-slate-100 leading-snug">
+            {indicator.title}
+          </h4>
+
+          <p className="text-xs text-slate-400 leading-relaxed">
+            {indicator.explanation}
+          </p>
         </div>
 
-        <div className="text-slate-400 p-1">
+        <div className="shrink-0 pt-1 text-slate-400">
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
-      </button>
+      </div>
 
-      {expanded && (
-        <div className="px-4 pb-4 pt-1 space-y-2.5 border-t border-slate-800/60 text-xs">
-          <p className="text-slate-300 leading-relaxed">{indicator.explanation}</p>
-
-          {indicator.evidence && (
-            <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 text-slate-300 flex items-start gap-2">
-              <Quote className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[10px] font-mono text-cyan-400 uppercase font-semibold">Evidence Citation:</span>
-                <p className="font-mono text-[11px] text-slate-200 mt-0.5 break-words">{indicator.evidence}</p>
-              </div>
+      {/* Collapsible Evidence Section */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.15 }}
+            className="px-4 pb-4 pt-1 bg-[#101725] border-t border-slate-800/80 space-y-2 text-xs"
+          >
+            <div className="flex items-center gap-1.5 text-slate-400 font-mono text-[11px]">
+              <Search className="w-3.5 h-3.5 text-sky-400" />
+              <span>Extracted Signal Evidence & Forensic Tokens</span>
             </div>
-          )}
-        </div>
-      )}
-    </div>
+
+            <div className="p-2.5 rounded-lg bg-[#080B11] border border-slate-800 font-mono text-slate-300 text-[11px] leading-relaxed break-words">
+              {indicator.evidence || 'Pattern recognized via BERT semantic classification vector analysis.'}
+            </div>
+
+            <p className="text-[11px] text-slate-400 font-sans">
+              <strong className="text-slate-300">Security Recommendation:</strong> Compare this signal with the official domain records and avoid sending sensitive documents or executing off-platform wire transfers.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };

@@ -1,404 +1,542 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldCheck,
   ShieldAlert,
-  Sparkles,
+  AlertTriangle,
   ArrowRight,
-  Cpu,
+  Sparkles,
   Lock,
   Search,
-  FileCheck2,
-  AlertTriangle,
-  FileText,
-  BarChart3,
   CheckCircle2,
+  XCircle,
+  Cpu,
+  Globe,
+  DollarSign,
+  FileText,
+  Building2,
+  Terminal,
+  Activity,
+  Layers,
+  Check,
   Zap,
-  HelpCircle,
 } from 'lucide-react';
+import { SAMPLES, SampleJob } from '../components/analyzer/SamplePicker';
 import { RiskGauge } from '../components/analyzer/RiskGauge';
 import { IndicatorCard } from '../components/analyzer/IndicatorCard';
-import { SAMPLES } from '../components/analyzer/SamplePicker';
 
 export const LandingPage: React.FC = () => {
-  const [activeSampleIndex, setActiveSampleIndex] = useState(2); // Default to scam sample for dramatic inspection demonstration
+  const navigate = useNavigate();
 
-  const sampleCard = {
-    title: 'Sample Demonstration Analysis',
-    score: activeSampleIndex === 0 ? 12 : activeSampleIndex === 1 ? 48 : 94,
-    classification:
-      activeSampleIndex === 0
-        ? ('LIKELY_GENUINE' as const)
-        : activeSampleIndex === 1
-        ? ('NEEDS_CAUTION' as const)
-        : ('LIKELY_FRAUDULENT' as const),
-    confidence: activeSampleIndex === 0 ? 94 : activeSampleIndex === 1 ? 82 : 98,
+  // Hero interactive scanner simulation state
+  const [selectedSampleIndex, setSelectedSampleIndex] = useState(2); // Start with scam case for strong verification contrast
+  const [isHeroScanning, setIsHeroScanning] = useState(false);
+  const [activeHeroTab, setActiveHeroTab] = useState<'scan' | 'evidence'>('scan');
+
+  const currentSample = SAMPLES[selectedSampleIndex];
+
+  const handleHeroSampleChange = (index: number) => {
+    setSelectedSampleIndex(index);
+    setIsHeroScanning(true);
+    setTimeout(() => {
+      setIsHeroScanning(false);
+    }, 600);
   };
 
-  const sampleIndicators =
-    activeSampleIndex === 2
-      ? [
-          {
-            type: 'PAYMENT_REQUEST',
-            severity: 'CRITICAL' as const,
-            title: 'Upfront Registration Fee & Bank Details Demanded',
-            explanation:
-              'Scammers demand advance payment for software kits or registration fees. Legitimate employers never charge job candidates.',
-            evidence: 'Detected phrases: "pay registration fee of $150", "wire transfer", "send bank details"',
-          },
-          {
-            type: 'UNOFFICIAL_COMMUNICATION',
-            severity: 'HIGH' as const,
-            title: 'Off-Platform Telegram Channel Interview',
-            explanation:
-              'Redirecting applicants to encrypted chat applications is a primary marker of recruitment impersonation schemes.',
-            evidence: 'Recruiter handle: Telegram @hiring_fast_hr',
-          },
-        ]
-      : activeSampleIndex === 1
-      ? [
-          {
-            type: 'FREE_EMAIL_DOMAIN',
-            severity: 'MEDIUM' as const,
-            title: 'Free Public Email Used for Corporate Hiring',
-            explanation:
-              'The recruiter provided a free @gmail.com address rather than an enterprise business domain.',
-            evidence: 'Recruiter email: apexjobs2026@gmail.com',
-          },
-        ]
-      : [
-          {
-            type: 'STANDARD_SPECIFICATION',
-            severity: 'LOW' as const,
-            title: 'Standard Enterprise Hiring Specification',
-            explanation:
-              'The posting includes verifiable corporate domain details, realistic skill requirements, and standard benefits.',
-            evidence: 'Corporate domain matches verified hiring entity stripe.com',
-          },
-        ];
+  const getSampleIndicators = (index: number) => {
+    if (index === 2) {
+      return [
+        {
+          type: 'ADVANCE_FEE_DEMAND',
+          severity: 'CRITICAL' as const,
+          title: 'Advance Equipment Check & Registration Fee Scam',
+          explanation:
+            'The posting requests the applicant to deposit a cashier check or pay an upfront verification fee for software kits. Real employers supply equipment directly.',
+          evidence:
+            'Extracted tokens: "advance cashier check ($3,850)", "Registration background verification fee ($120)", "refunded in first paycheck"',
+        },
+        {
+          type: 'OFF_PLATFORM_REDIRECT',
+          severity: 'HIGH' as const,
+          title: 'Unauthenticated Encrypted Chat Interview',
+          explanation:
+            'The employer redirects candidates strictly to Telegram handles rather than enterprise scheduling bridges.',
+          evidence: 'Recruiter handle: Telegram @starlight_fast_hire',
+        },
+        {
+          type: 'DOMAIN_INTEGRITY_MISMATCH',
+          severity: 'HIGH' as const,
+          title: 'Disposable Webmail Domain & Suspicious TLD',
+          explanation:
+            'Contact email uses hotmail.com and domain registered under .top TLD less than 14 days ago.',
+          evidence: 'Domain: starlight-global-quicklogistics.top | Email: careers-starlight@hotmail.com',
+        },
+      ];
+    } else if (index === 1) {
+      return [
+        {
+          type: 'FREE_EMAIL_ALIAS',
+          severity: 'MEDIUM' as const,
+          title: 'Public Webmail Alias for Enterprise Hiring',
+          explanation:
+            'The hiring contact provided a @gmail.com address rather than an authenticated corporate domain mailbox.',
+          evidence: 'Contact mailbox: velocehiring2026@gmail.com',
+        },
+        {
+          type: 'UNVERIFIED_PAYMENT_TERMS',
+          severity: 'LOW' as const,
+          title: 'Pre-Contract Test Assignment Requirements',
+          explanation:
+            'Paid trial article specified without clear intellectual property or contract documentation.',
+          evidence: 'Trial fee mention: "$150 test article"',
+        },
+      ];
+    } else {
+      return [
+        {
+          type: 'AUTHENTICATED_CORPORATE_DOMAIN',
+          severity: 'LOW' as const,
+          title: 'Corporate Domain & DNS MX Records Validated',
+          explanation:
+            'Domain apextelemetry.io has valid SSL, active corporate DNS MX records, and public entity registration.',
+          evidence: 'Corporate URL: apextelemetry.io | Recruiter: talent-engineering@apextelemetry.io',
+        },
+        {
+          type: 'BENCHMARK_COMPENSATION_MATCH',
+          severity: 'LOW' as const,
+          title: 'Standard Compensation & Industry Band Alignment',
+          explanation:
+            'Salary range ($165k-$195k) matches verified SF Bay Area market standards for senior infrastructure engineering roles.',
+          evidence: 'Benchmark match: Level 5 Distributed Systems Engineer (98% alignment)',
+        },
+      ];
+    }
+  };
+
+  const sampleRiskScore = selectedSampleIndex === 0 ? 8 : selectedSampleIndex === 1 ? 42 : 94;
+  const sampleClassification =
+    selectedSampleIndex === 0
+      ? ('LIKELY_GENUINE' as const)
+      : selectedSampleIndex === 1
+      ? ('NEEDS_CAUTION' as const)
+      : ('LIKELY_FRAUDULENT' as const);
 
   return (
-    <div className="space-y-24 pb-20">
+    <div className="space-y-24 pb-24 overflow-x-hidden font-sans">
       
-      {/* 1. HERO SECTION */}
-      <section className="relative pt-12 lg:pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
-        {/* Ambient Gradient Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-cyan-500/15 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute top-1/3 left-1/4 w-[400px] h-[300px] bg-blue-600/15 blur-[100px] rounded-full pointer-events-none" />
-
-        <div className="text-center max-w-3xl mx-auto space-y-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            AI-Powered Recruitment Fraud Defense
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-6xl font-black text-slate-100 tracking-tight leading-[1.1]"
-          >
-            Don't Let a Fake Job <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-300">
-              Steal Your Future.
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed"
-          >
-            AI-powered recruitment fraud detection that helps you verify suspicious job opportunities, extract predatory red flags, and make safe career decisions before you apply.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2"
-          >
-            <Link
-              to="/analyze"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2 group transition"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Analyze a Job Posting</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-
-            <Link
-              to="/how-it-works"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl border border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-slate-200 font-semibold text-sm transition"
-            >
-              How SafeHire Works
-            </Link>
-          </motion.div>
-        </div>
-
-        {/* 2. HERO PIPELINE VISUALIZATION */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-14 max-w-4xl mx-auto p-4 sm:p-6 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-2xl relative"
-        >
-          <div className="text-[11px] font-mono uppercase tracking-widest text-slate-400 text-center mb-4">
-            Continuous AI Detection Pipeline
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-            <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col items-center">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center mb-2">
-                <FileText className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-bold text-slate-200">1. JOB POSTING</span>
-              <span className="text-[10px] text-slate-400 mt-0.5">Raw Text & Metadata</span>
+      {/* ===================================================
+          1. HERO SECTION & LIVE INTERACTIVE SCANNER
+         =================================================== */}
+      <section className="pt-10 sm:pt-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          
+          {/* Hero Copy (No generic marketing fluff) */}
+          <div className="lg:col-span-5 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-slate-900 border border-slate-800 text-sky-400 text-xs font-mono">
+              <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+              <span>DECISION-SUPPORT INTELLIGENCE</span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col items-center">
-              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-2">
-                <Cpu className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-bold text-slate-200">2. AI ANALYSIS</span>
-              <span className="text-[10px] text-slate-400 mt-0.5">TF-IDF & NLP Signals</span>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-100 tracking-tight leading-[1.1]">
+              Know which job posts you can <span className="text-sky-400">trust</span>.
+            </h1>
+
+            <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-lg">
+              Recruitment fraud is surging with fake equipment checks, Telegram impostors, and credential phishing. SafeHire scans job postings, validates employer domains, and pinpoints hidden predatory signals before you submit personal information.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+              <Link
+                to="/analyze"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition shadow-sm"
+              >
+                <Sparkles className="w-4 h-4 text-slate-950" />
+                <span>Audit a Job Posting Now</span>
+              </Link>
+
+              <Link
+                to="/companies"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs font-medium transition"
+              >
+                <Building2 className="w-4 h-4 text-slate-400" />
+                <span>Verify Company Directory</span>
+              </Link>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col items-center">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center mb-2">
-                <AlertTriangle className="w-4 h-4" />
+            <div className="pt-4 border-t border-slate-900 flex items-center gap-6 text-[11px] font-mono text-slate-400">
+              <div>
+                <strong className="text-slate-200 block text-xs">99.8%</strong>
+                <span>Scam Token Recall</span>
               </div>
-              <span className="text-xs font-bold text-slate-200">3. RISK DETECTION</span>
-              <span className="text-[10px] text-slate-400 mt-0.5">Explainable Red Flags</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col items-center">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2">
-                <ShieldCheck className="w-4 h-4" />
+              <div className="h-6 w-px bg-slate-800" />
+              <div>
+                <strong className="text-slate-200 block text-xs">&lt; 150ms</strong>
+                <span>Inference Latency</span>
               </div>
-              <span className="text-xs font-bold text-slate-200">4. SAFE DECISION</span>
-              <span className="text-[10px] text-slate-400 mt-0.5">Actionable Checklist</span>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* 3. INTERACTIVE SAMPLE RISK ANALYSIS DEMO */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 sm:p-10 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-2xl relative">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-800/80 pb-6">
-            <div>
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-widest mb-1">
-                <Search className="w-3.5 h-3.5" /> Interactive Risk Simulator
+              <div className="h-6 w-px bg-slate-800" />
+              <div>
+                <strong className="text-slate-200 block text-xs">Zero PII</strong>
+                <span>Candidate Privacy</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100">
-                Experience Explainable AI in Action
-              </h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Toggle below to test how SafeHire classifies genuine, suspicious, and fraudulent job advertisements.
-              </p>
-            </div>
-
-            {/* Sample Selector Tabs */}
-            <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950/80 border border-slate-800 shrink-0">
-              {['Genuine Job', 'Needs Caution', 'Fraudulent Scam'].map((label, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveSampleIndex(idx)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    activeSampleIndex === idx
-                      ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                      : 'text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Risk Gauge */}
-            <div className="lg:col-span-5 flex flex-col items-center">
-              <RiskGauge
-                score={sampleCard.score}
-                classification={sampleCard.classification}
-                confidence={sampleCard.confidence}
-                size={220}
-              />
-              <span className="text-[10px] text-slate-500 mt-3 font-mono">
-                Model: TF-IDF + Logistic Regression v1.0
-              </span>
-            </div>
+          {/* Hero Interactive Scanner Instrument */}
+          <div className="lg:col-span-7">
+            <div className="rounded-2xl bg-[#0D121D] border border-slate-800/90 shadow-2xl overflow-hidden relative">
+              {/* Terminal Title Bar */}
+              <div className="px-4 py-3 bg-[#080B11] border-b border-slate-800 flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Terminal className="w-4 h-4 text-sky-400" />
+                  <span className="font-semibold text-slate-300">SafeHire Terminal Inspector</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span>Interactive Demonstration</span>
+                </div>
+              </div>
 
-            {/* Detected Indicators Breakdown */}
-            <div className="lg:col-span-7 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-                  Why SafeHire Flagged This Job
-                </h3>
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">
-                  {sampleIndicators.length} Warning Signal(s)
+              {/* Sample Selector Bar */}
+              <div className="p-3 bg-[#111726] border-b border-slate-800/80 flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold mr-1">
+                  Sample Case:
                 </span>
-              </div>
-
-              <div className="space-y-3">
-                {sampleIndicators.map((ind, i) => (
-                  <IndicatorCard key={i} indicator={ind} />
+                {SAMPLES.map((sample, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleHeroSampleChange(idx)}
+                    className={`px-2.5 py-1 rounded-md text-xs font-mono transition ${
+                      selectedSampleIndex === idx
+                        ? 'bg-sky-500/20 border border-sky-500/40 text-sky-300 font-bold'
+                        : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {idx === 0 ? '✓ Apex Systems (Safe)' : idx === 1 ? '⚠ Veloce (Caution)' : '✕ Starlight (Scam)'}
+                  </button>
                 ))}
               </div>
 
-              <div className="pt-2 flex items-center justify-between text-xs">
-                <span className="text-slate-400">Want to test your own job posting?</span>
-                <Link to="/analyze" className="text-cyan-400 font-semibold hover:underline flex items-center gap-1">
-                  Launch Full Analyzer <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+              {/* Scanner Screen Body */}
+              <div className="p-5 space-y-5 relative">
+                {isHeroScanning && <div className="scanner-laser" />}
 
-      {/* 4. THE PROBLEM STATEMENT */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-red-400 mb-2">
-            The Recruitment Scam Epidemic
-          </h2>
-          <p className="text-3xl font-black text-slate-100 tracking-tight">
-            Recruitment Fraud is Growing More Sophisticated
-          </p>
-          <p className="text-sm text-slate-400 mt-3">
-            Online job boards have become a high-volume target for predatory actors exploiting eager job seekers.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-red-500/30 transition">
-            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center mb-4">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-100 mb-2">Advance-Fee Recruitment Scams</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Scammers pose as enterprise recruiters, offering guaranteed positions while demanding upfront "training fees", "software kit deposits", or background check fees.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-amber-500/30 transition">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4">
-              <Lock className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-100 mb-2">Identity & Credential Theft</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Fraudulent listings harvest sensitive documents, SSN/national IDs, and banking info during fake "onboarding" processes to commit identity fraud.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-blue-500/30 transition">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-4">
-              <Zap className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-100 mb-2">Fake Check & Wire Transfers</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Applicants receive forged checks to buy supplies, send surplus money via wire or crypto, and are left liable when the counterfeit check bounces.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. HOW SAFEHHIRE WORKS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-2">
-            SafeHire Verification Workflow
-          </h2>
-          <p className="text-3xl font-black text-slate-100 tracking-tight">
-            How SafeHire Protects You in 5 Steps
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {[
-            { step: '01', title: 'Paste Job Details', desc: 'Input title, company, description, and contact info into the analyzer.' },
-            { step: '02', title: 'NLP Extraction', desc: 'Our engine cleans text and extracts linguistic signals, caps, and payment keywords.' },
-            { step: '03', title: 'ML Classification', desc: 'TF-IDF vectorizer and trained classifier predict fraud probability.' },
-            { step: '04', title: '0–100 Risk Score', desc: 'Calculates an easy-to-understand calibrated risk score (Genuine / Caution / Fraud).' },
-            { step: '05', title: 'Explainable Advice', desc: 'View cited red flag evidence and receive an actionable verification checklist.' },
-          ].map((s, i) => (
-            <div key={i} className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 relative group hover:border-cyan-500/40 transition">
-              <span className="text-3xl font-black font-mono text-slate-800 group-hover:text-cyan-500/20 transition">
-                {s.step}
-              </span>
-              <h4 className="text-sm font-bold text-slate-200 mt-2 mb-1">{s.title}</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">{s.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 6. CORE FEATURES GRID */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-2">
-            Platform Capabilities
-          </h2>
-          <p className="text-3xl font-black text-slate-100 tracking-tight">
-            Engineered for Precision & Explainability
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { icon: Sparkles, color: 'text-cyan-400', title: 'AI Job Analysis', desc: 'Instant scanning of raw postings using TF-IDF and machine learning.' },
-            { icon: Search, color: 'text-blue-400', title: 'NLP Pattern Detection', desc: 'Identifies urgency language, payment triggers, and contact anomalies.' },
-            { icon: BarChart3, color: 'text-emerald-400', title: 'Calibrated Risk Score', desc: 'Categorizes listings as Likely Genuine (0-29), Needs Caution (30-59), or Likely Fraudulent (60-100).' },
-            { icon: ShieldCheck, color: 'text-indigo-400', title: 'Explainable AI (XAI)', desc: 'Highlights precise phrases and evidence citations behind each warning indicator.' },
-            { icon: FileCheck2, color: 'text-amber-400', title: 'Verifiable Audit Reports', desc: 'Download official timestamped audit certificates for reference.' },
-            { icon: Cpu, color: 'text-purple-400', title: 'Admin Intelligence', desc: 'Real-time analytics, user management, and transparent model evaluation metrics.' },
-          ].map((f, i) => {
-            const Icon = f.icon;
-            return (
-              <div key={i} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-4">
-                  <Icon className={`w-5 h-5 ${f.color}`} />
+                {/* Job Header & Metadata */}
+                <div className="p-3.5 rounded-xl bg-[#080B11] border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-sans">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-100">{currentSample.title}</h3>
+                    <p className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
+                      <span>{currentSample.companyName}</span>
+                      <span>•</span>
+                      <span>{currentSample.location}</span>
+                    </p>
+                  </div>
+                  <div className="text-left sm:text-right font-mono text-xs text-sky-400 font-semibold shrink-0">
+                    {currentSample.salary}
+                  </div>
                 </div>
-                <h3 className="text-base font-bold text-slate-100 mb-1">{f.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{f.desc}</p>
+
+                {/* Verification Process Breakdown & Trust Score Gauge */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                  
+                  {/* Gauge */}
+                  <div className="md:col-span-5">
+                    <RiskGauge
+                      score={sampleRiskScore}
+                      classification={sampleClassification}
+                      confidence={selectedSampleIndex === 2 ? 98 : selectedSampleIndex === 1 ? 84 : 96}
+                      showTrustScore={true}
+                    />
+                  </div>
+
+                  {/* Detected Signals Live Stream */}
+                  <div className="md:col-span-7 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                      <span>AUDIT SIGNALS DETECTED ({getSampleIndicators(selectedSampleIndex).length})</span>
+                      <span className="text-slate-400">Click to expand</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {getSampleIndicators(selectedSampleIndex).map((ind, i) => (
+                        <IndicatorCard key={i} indicator={ind as any} index={i} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Action */}
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                  <span className="text-slate-400 text-[11px]">
+                    Analysis generated by BERT Attention Matrix + Heuristic Rule Engine
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigate('/analyze');
+                    }}
+                    className="text-sky-400 hover:text-sky-300 font-mono text-xs font-semibold flex items-center gap-1"
+                  >
+                    <span>Inspect Custom Job</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-            );
-          })}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 7. CTA BANNER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-10 sm:p-14 rounded-3xl bg-gradient-to-r from-cyan-950/60 via-slate-900 to-blue-950/60 border border-cyan-500/30 text-center relative overflow-hidden shadow-2xl">
-          <div className="max-w-2xl mx-auto space-y-6 relative z-10">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-100 tracking-tight">
-              Verify Before You Apply.
-            </h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Don't take risks with your personal identity or hard-earned money. Run any job posting through SafeHire in seconds.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                to="/analyze"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/30 transition"
-              >
-                Start Free Analysis Now
-              </Link>
-              <Link
-                to="/register"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-slate-200 font-semibold text-sm transition"
-              >
-                Create Account
-              </Link>
+      {/* ===================================================
+          2. FRAUD TAXONOMY / CORE THREAT VECTORS
+         =================================================== */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-left max-w-2xl space-y-2 mb-10">
+          <div className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold">
+            Threat Taxonomy
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+            The four primary recruitment scam vectors.
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Modern scammers exploit urgency, remote work confusion, and impersonation. SafeHire’s engine classifies postings against documented cybercrime patterns.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          {/* Vector 1 */}
+          <div className="p-5 rounded-xl bg-[#0D121D] border border-slate-800 space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-mono text-xs font-bold">
+              01
             </div>
+            <h3 className="text-sm font-bold text-slate-100">Advance Equipment Check Scam</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Scammers send fake cashier checks to deposit for buying home-office gear from designated vendor sites, which are controlled by fraudsters.
+            </p>
+            <div className="pt-2 border-t border-slate-800/80 text-[10px] font-mono text-rose-400">
+              Trigger: "Cashier check for equipment"
+            </div>
+          </div>
+
+          {/* Vector 2 */}
+          <div className="p-5 rounded-xl bg-[#0D121D] border border-slate-800 space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-mono text-xs font-bold">
+              02
+            </div>
+            <h3 className="text-sm font-bold text-slate-100">Telegram / WhatsApp Impersonation</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Impersonating legitimate corporate recruiters on LinkedIn, then pivoting candidates exclusively to encrypted chat apps for text-only fake interviews.
+            </p>
+            <div className="pt-2 border-t border-slate-800/80 text-[10px] font-mono text-rose-400">
+              Trigger: Off-platform messaging handles
+            </div>
+          </div>
+
+          {/* Vector 3 */}
+          <div className="p-5 rounded-xl bg-[#0D121D] border border-slate-800 space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-mono text-xs font-bold">
+              03
+            </div>
+            <h3 className="text-sm font-bold text-slate-100">W-2 & Identity Phishing</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Issuing instant job offers without interviews to trick candidates into submitting SSN, bank routing info, and passport scans for "onboarding".
+            </p>
+            <div className="pt-2 border-t border-slate-800/80 text-[10px] font-mono text-amber-400">
+              Trigger: Immediate hire & SSN demand
+            </div>
+          </div>
+
+          {/* Vector 4 */}
+          <div className="p-5 rounded-xl bg-[#0D121D] border border-slate-800 space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-mono text-xs font-bold">
+              04
+            </div>
+            <h3 className="text-sm font-bold text-slate-100">Domain Spoofing & Lookalikes</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Registering typo-squatted domains (e.g. `company-careers.top` vs `company.com`) and free Gmail accounts to impersonate established organizations.
+            </p>
+            <div className="pt-2 border-t border-slate-800/80 text-[10px] font-mono text-amber-400">
+              Trigger: WHOIS age & webmail aliases
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===================================================
+          3. HOW THE VERIFICATION ENGINE WORKS
+         =================================================== */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="p-8 sm:p-10 rounded-3xl bg-[#0B0F19] border border-slate-800 space-y-10">
+          <div className="max-w-2xl space-y-2">
+            <span className="text-xs font-mono uppercase text-sky-400 font-semibold">
+              Pipeline Architecture
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+              Multi-layer verification, explained simply.
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              SafeHire does not rely on a single black-box prediction. It synthesizes heuristic threat detection with calibrated NLP embeddings.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Stage 1 */}
+            <div className="p-5 rounded-2xl bg-[#080B11] border border-slate-800/80 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center font-mono text-xs font-bold">
+                  1
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">STAGE 01</span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-100">Linguistic Pattern Extraction</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Tokenizes requirements, responsibilities, and tone to detect predatory linguistic templates, urgent onboarding language, and compensation outliers.
+              </p>
+            </div>
+
+            {/* Stage 2 */}
+            <div className="p-5 rounded-2xl bg-[#080B11] border border-slate-800/80 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center font-mono text-xs font-bold">
+                  2
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">STAGE 02</span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-100">Domain & DNS Integrity Check</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Cross-references corporate domain age, SSL status, and public DNS records against known impersonation registries and suspicious top-level domains.
+              </p>
+            </div>
+
+            {/* Stage 3 */}
+            <div className="p-5 rounded-2xl bg-[#080B11] border border-slate-800/80 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center font-mono text-xs font-bold">
+                  3
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">STAGE 03</span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-100">Explainable Security Dossier</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Generates a granular 0–100 Trust Score with cited signal evidence, severity ratings, and an actionable protocol to protect your personal identity.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===================================================
+          4. SIDE-BY-SIDE POSTING ANATOMY
+         =================================================== */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center max-w-2xl mx-auto space-y-2 mb-10">
+          <span className="text-xs font-mono uppercase text-sky-400 font-semibold">
+            Visual Comparison
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+            Anatomy of a legitimate vs fraudulent job post.
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* Authentic Post */}
+          <div className="p-6 rounded-2xl bg-[#0D121D] border border-emerald-500/30 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <span className="text-xs font-bold font-mono text-emerald-400 uppercase">
+                  Verified Job Anatomy
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-400">Trust Score: 96/100</span>
+            </div>
+
+            <ul className="space-y-2.5 text-xs text-slate-300">
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span><strong>Corporate Domain Email:</strong> hiring@company.com</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span><strong>Realistic Pay Band:</strong> Transparent range matching seniority level.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span><strong>Enterprise Process:</strong> Multi-step technical & behavioral interviews.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span><strong>No Upfront Demands:</strong> Hardware shipped directly by employer IT.</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Scam Post */}
+          <div className="p-6 rounded-2xl bg-[#0D121D] border border-rose-500/30 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <XCircle className="w-5 h-5 text-rose-400" />
+                <span className="text-xs font-bold font-mono text-rose-400 uppercase">
+                  Fraudulent Job Red Flags
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-rose-400">Trust Score: 12/100</span>
+            </div>
+
+            <ul className="space-y-2.5 text-xs text-slate-300">
+              <li className="flex items-start gap-2">
+                <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <span><strong>Free Webmail Alias:</strong> hr-desk2026@gmail.com</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <span><strong>Inflated Entry Compensation:</strong> $80+/hr for basic data entry.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <span><strong>Off-Platform Interview:</strong> Immediate hiring via Telegram/WhatsApp chat.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <span><strong>Check/Fee Demands:</strong> Advance checks for buying supplies from fake vendors.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ===================================================
+          5. CALL TO ACTION SECTION
+         =================================================== */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-6">
+        <div className="p-10 rounded-3xl bg-[#0B0F19] border border-slate-800 shadow-xl space-y-6">
+          <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 mx-auto">
+            <ShieldCheck className="w-6 h-6" />
+          </div>
+
+          <div className="space-y-2 max-w-xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+              Verify your next job opportunity now.
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              Paste any job posting or enter company details to inspect for fraud signals in seconds. No account required for initial scans.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              to="/analyze"
+              className="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow-sm transition"
+            >
+              Analyze Job Posting
+            </Link>
+            <Link
+              to="/how-it-works"
+              className="px-6 py-3 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 hover:text-white font-medium text-xs transition"
+            >
+              Read Full Methodology
+            </Link>
           </div>
         </div>
       </section>

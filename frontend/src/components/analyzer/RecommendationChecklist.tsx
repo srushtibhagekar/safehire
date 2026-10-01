@@ -1,75 +1,128 @@
-import React, { useState } from 'react';
-import { CheckSquare, Square, ShieldCheck, ExternalLink, AlertOctagon } from 'lucide-react';
+import React from 'react';
+import { ShieldCheck, AlertOctagon, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 import { ClassificationType } from '../../types/analysis';
 
 interface RecommendationChecklistProps {
   classification: ClassificationType;
-  recommendation: string;
+  recommendationText?: string;
 }
 
 export const RecommendationChecklist: React.FC<RecommendationChecklistProps> = ({
   classification,
-  recommendation,
+  recommendationText,
 }) => {
-  const isHighRisk = classification === 'LIKELY_FRAUDULENT';
+  const isGenuine = classification === 'LIKELY_GENUINE';
+  const isCaution = classification === 'NEEDS_CAUTION';
+  const isFraud = classification === 'LIKELY_FRAUDULENT';
 
-  const defaultItems = isHighRisk
+  const actionProtocols = isFraud
     ? [
-        { id: 1, text: 'Do NOT transfer money, wire fees, or purchase gift cards under any circumstances.', checked: false },
-        { id: 2, text: 'Do NOT share government identification numbers (SSN, Aadhaar, Passport) or bank details.', checked: false },
-        { id: 3, text: 'Search the company name and career page independently to confirm if the requisition exists.', checked: false },
-        { id: 4, text: 'Report this scam posting to the platform administrators and relevant consumer protection agencies.', checked: false },
+        {
+          label: 'DO NOT wire or transfer funds for registration, software kits, or background checks.',
+          safe: false,
+        },
+        {
+          label: 'DO NOT deposit advance cashier checks to purchase equipment from designated vendors.',
+          safe: false,
+        },
+        {
+          label: 'DO NOT share SSN, banking credentials, or tax identification on unverified channels.',
+          safe: false,
+        },
+        {
+          label: 'Cease communication with any recruiter insisting exclusively on Telegram/WhatsApp.',
+          safe: true,
+        },
+        {
+          label: 'Report this domain and recruiter handle to the official Federal Trade Commission (FTC) or IC3.',
+          safe: true,
+        },
+      ]
+    : isCaution
+    ? [
+        {
+          label: 'Verify that the recruiter email matches the official corporate domain, not a public webmail alias.',
+          safe: true,
+        },
+        {
+          label: 'Cross-reference this open position directly on the official company careers portal.',
+          safe: true,
+        },
+        {
+          label: 'Confirm the interview is scheduled through an authenticated video bridge (Google Meet / Teams / Zoom).',
+          safe: true,
+        },
+        {
+          label: 'Clarify unverified compensation claims or unusual hourly rates before executing NDA contracts.',
+          safe: true,
+        },
       ]
     : [
-        { id: 1, text: 'Verify that recruiter correspondence comes from an official corporate domain name.', checked: false },
-        { id: 2, text: 'Confirm the hiring manager profile and company page on professional networks like LinkedIn.', checked: false },
-        { id: 3, text: 'Ensure the interview takes place on verified enterprise conferencing software (Zoom, Teams, Meet).', checked: false },
-        { id: 4, text: 'Review employee feedback and salary expectations on Glassdoor or Levels.fyi.', checked: false },
+        {
+          label: 'Standard enterprise hiring parameters verified with zero high-risk linguistic indicators.',
+          safe: true,
+        },
+        {
+          label: 'Corporate domain matches authenticated hiring entity and official DNS records.',
+          safe: true,
+        },
+        {
+          label: 'Compensation range aligns with certified industry market compensation benchmarks.',
+          safe: true,
+        },
+        {
+          label: 'Safe to proceed through standard application and interview pipelines.',
+          safe: true,
+        },
       ];
 
-  const [items, setItems] = useState(defaultItems);
-
-  const toggle = (id: number) => {
-    setItems((prev) =>
-      prev.map((it) => (it.id === id ? { ...it, checked: !it.checked } : it))
-    );
-  };
-
   return (
-    <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
-      <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-xl border ${isHighRisk ? 'bg-red-500/15 text-red-400 border-red-500/30' : 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30'}`}>
-          {isHighRisk ? <AlertOctagon className="w-5 h-5" /> : <ShieldCheck className="w-5 h-5" />}
+    <div className="rounded-2xl bg-[#0D121D] border border-slate-800 p-6 shadow-sm space-y-4 font-sans">
+      <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+        <div className="flex items-center gap-2">
+          {isFraud ? (
+            <AlertOctagon className="w-5 h-5 text-rose-400" />
+          ) : (
+            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+          )}
+          <h3 className="text-sm font-bold text-slate-100 font-mono tracking-tight uppercase">
+            Candidate Security Protocol
+          </h3>
         </div>
-        <div>
-          <h3 className="text-base font-bold text-slate-100">Recommended Action Plan</h3>
-          <p className="text-xs text-slate-400">Decision-support verification checklist</p>
-        </div>
+        <span
+          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+            isFraud
+              ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+              : isCaution
+              ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+              : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+          }`}
+        >
+          {isFraud ? 'MANDATORY DEFENSE' : isCaution ? 'ADVISORY' : 'VERIFIED SAFE'}
+        </span>
       </div>
 
-      <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-200 leading-relaxed font-medium">
-        {recommendation}
-      </div>
+      {recommendationText && (
+        <div className="p-3.5 rounded-xl bg-[#121927] border border-slate-800 text-xs text-slate-300 leading-relaxed">
+          <strong className="text-slate-100 font-semibold font-mono block mb-1">
+            EXECUTIVE ADVISORY:
+          </strong>
+          {recommendationText}
+        </div>
+      )}
 
-      <div className="space-y-2.5 pt-2">
-        <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Candidate Verification Steps</p>
-        {items.map((it) => (
-          <button
-            key={it.id}
-            onClick={() => toggle(it.id)}
-            className={`w-full flex items-start gap-3 p-2.5 rounded-xl border text-left text-xs transition ${
-              it.checked
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                : 'bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700'
-            }`}
-          >
-            {it.checked ? (
-              <CheckSquare className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+      <div className="space-y-2.5 pt-1">
+        {actionProtocols.map((item, idx) => (
+          <div key={idx} className="flex items-start gap-2.5 text-xs">
+            {item.safe ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             ) : (
-              <Square className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+              <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
             )}
-            <span className={it.checked ? 'line-through opacity-80' : ''}>{it.text}</span>
-          </button>
+            <span className={item.safe ? 'text-slate-300' : 'text-rose-300 font-medium'}>
+              {item.label}
+            </span>
+          </div>
         ))}
       </div>
     </div>
