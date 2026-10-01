@@ -2,20 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Building2,
-  ShieldCheck,
-  ShieldAlert,
-  AlertTriangle,
-  Search,
   Globe,
   Mail,
-  Calendar,
   ExternalLink,
-  CheckCircle2,
-  XCircle,
-  Sparkles,
-  ArrowRight,
-  Lock,
-  History,
+  Search,
+  Plus,
 } from 'lucide-react';
 
 interface CompanyRecord {
@@ -30,7 +21,6 @@ interface CompanyRecord {
   mxRecordsValid: boolean;
   activeScamAlerts: number;
   knownRecruiterDomains: string[];
-  recentPostsCount: number;
   riskSignals: string[];
   summary: string;
 }
@@ -48,7 +38,6 @@ const SAMPLE_COMPANIES: CompanyRecord[] = [
     mxRecordsValid: true,
     activeScamAlerts: 0,
     knownRecruiterDomains: ['@apextelemetry.io'],
-    recentPostsCount: 8,
     riskSignals: [
       'DNS MX records authenticated with Google Workspace Enterprise',
       'Entity verified in SEC EDGAR and California Secretary of State registry',
@@ -67,9 +56,8 @@ const SAMPLE_COMPANIES: CompanyRecord[] = [
     headquarters: 'South San Francisco, CA & Dublin',
     domainAge: '15+ Years (Global Tier 1 DNS)',
     mxRecordsValid: true,
-    activeScamAlerts: 2, // 2 reported third-party phishing impersonations blocked
+    activeScamAlerts: 2,
     knownRecruiterDomains: ['@stripe.com'],
-    recentPostsCount: 42,
     riskSignals: [
       'Official enterprise hiring conducted strictly through stripe.com/jobs and Greenhouse ATS',
       'Active phishing alert: Third-party scammers frequently spoof Stripe HR names on Telegram. Verify email ends in @stripe.com',
@@ -89,7 +77,6 @@ const SAMPLE_COMPANIES: CompanyRecord[] = [
     mxRecordsValid: true,
     activeScamAlerts: 1,
     knownRecruiterDomains: ['@velocemedia.co', '@gmail.com (Contractors)'],
-    recentPostsCount: 3,
     riskSignals: [
       'Recruiters occasionally use free @gmail.com aliases for freelance contractor intake',
       'Short domain registration duration (< 2 years)',
@@ -109,7 +96,6 @@ const SAMPLE_COMPANIES: CompanyRecord[] = [
     mxRecordsValid: false,
     activeScamAlerts: 19,
     knownRecruiterDomains: ['@hotmail.com', '@telegram: @starlight_fast_hire'],
-    recentPostsCount: 14,
     riskSignals: [
       'Domain registered under suspicious .top TLD within last 30 days',
       'Zero corporate business registration in designated jurisdiction',
@@ -133,98 +119,78 @@ export const CompanyVerificationPage: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 font-sans text-foreground">
       
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-[#0D121D] border border-slate-800">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 text-xs font-mono text-sky-400 font-semibold uppercase tracking-wider">
-            <Building2 className="w-4 h-4" />
-            <span>Corporate Authenticity Directory</span>
-          </div>
-          <h1 className="text-2xl font-extrabold text-slate-100">
-            Company Domain & Identity Verification
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">
+            Company Verification Directory
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
-            Audit employer domain age, authenticated MX records, known recruiter aliases, and active impersonation threat intelligence before responding to recruiters.
+          <p className="text-xs text-text-secondary">
+            Audit employer domain age, DNS MX mail records, and known recruiter channels.
           </p>
         </div>
 
         <Link
           to="/analyze"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition shadow-sm shrink-0 font-sans"
+          className="px-3.5 py-1.5 rounded-md bg-foreground text-background text-xs font-medium hover:opacity-90 transition shadow-sm flex items-center gap-1.5 shrink-0"
         >
-          <Sparkles className="w-4 h-4 text-slate-950" />
-          <span>Audit Specific Job Post</span>
+          <Plus className="w-3.5 h-3.5" />
+          <span>Analyze a specific job</span>
         </Link>
       </div>
 
-      {/* Main Investigation Split View */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Directory Split View */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Column: Search & Company List (5 cols) */}
-        <div className="lg:col-span-5 space-y-4">
-          {/* Search Input */}
+        {/* Left Column: Company Search & List (5 cols) */}
+        <div className="lg:col-span-5 space-y-3">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by company name, domain, or industry..."
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0D121D] border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500"
+              placeholder="Search companies by name or domain..."
+              className="w-full pl-8 pr-3 py-1.5 rounded-md bg-surface border border-border text-xs text-foreground placeholder-text-muted focus:outline-none focus:border-zinc-500"
             />
           </div>
 
-          {/* Company Cards List */}
-          <div className="space-y-2.5">
+          <div className="rounded-lg bg-surface border border-border divide-y divide-border overflow-hidden shadow-sm">
             {filteredCompanies.map((comp) => {
               const isSelected = selectedCompany.id === comp.id;
               const isVer = comp.verificationStatus === 'VERIFIED';
               const isHighRisk = comp.verificationStatus === 'HIGH_RISK';
 
+              const pill = isVer
+                ? 'status-pill-safe'
+                : isHighRisk
+                ? 'status-pill-danger'
+                : 'status-pill-caution';
+
               return (
                 <div
                   key={comp.id}
                   onClick={() => setSelectedCompany(comp)}
-                  className={`p-4 rounded-xl cursor-pointer transition border ${
-                    isSelected
-                      ? 'bg-[#121927] border-sky-500/50 shadow-md'
-                      : 'bg-[#0D121D] border-slate-800 hover:border-slate-700'
+                  className={`p-3.5 cursor-pointer text-xs transition-colors ${
+                    isSelected ? 'bg-surface-subtle' : 'hover:bg-surface-hover/60'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-slate-100">{comp.name}</h4>
-                        <span
-                          className={`text-[10px] font-mono px-1.5 py-0.2 rounded border font-bold uppercase ${
-                            isVer
-                              ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                              : isHighRisk
-                              ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
-                              : 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-                          }`}
-                        >
+                        <h4 className="font-semibold text-foreground">{comp.name}</h4>
+                        <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${pill}`}>
                           {comp.verificationStatus.replace(/_/g, ' ')}
                         </span>
                       </div>
-                      <p className="text-xs font-mono text-slate-400 flex items-center gap-1.5">
-                        <Globe className="w-3 h-3 text-slate-500" />
-                        <span>{comp.domain}</span>
-                      </p>
-                      <p className="text-[11px] text-slate-500">{comp.industry}</p>
+                      <p className="text-[11px] font-mono text-text-muted">{comp.domain}</p>
                     </div>
 
                     <div className="text-right font-mono shrink-0">
-                      <span className="text-[10px] text-slate-500 block uppercase">Trust</span>
-                      <span
-                        className={`text-sm font-black ${
-                          isVer ? 'text-emerald-400' : isHighRisk ? 'text-rose-400' : 'text-amber-400'
-                        }`}
-                      >
-                        {comp.trustScore}/100
-                      </span>
+                      <span className="text-[10px] text-text-muted uppercase block">Trust</span>
+                      <span className="text-sm font-bold text-foreground">{comp.trustScore}/100</span>
                     </div>
                   </div>
                 </div>
@@ -233,122 +199,100 @@ export const CompanyVerificationPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Deep Company Dossier View (7 cols) */}
+        {/* Right Column: Deep Company Profile (7 cols) */}
         <div className="lg:col-span-7">
-          <div className="rounded-2xl bg-[#0D121D] border border-slate-800 p-6 space-y-6 shadow-xl sticky top-24">
+          <div className="p-6 rounded-lg bg-surface border border-border space-y-5 shadow-sm sticky top-20 text-xs">
             
-            {/* Dossier Top Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3 border-b border-border pb-4">
               <div className="space-y-1">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-mono font-bold text-sm">
-                    {selectedCompany.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-extrabold text-slate-100">{selectedCompany.name}</h2>
-                    <a
-                      href={`https://${selectedCompany.domain}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs font-mono text-sky-400 hover:underline flex items-center gap-1"
-                    >
-                      <span>{selectedCompany.domain}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-left sm:text-right font-mono">
-                <span className="text-[10px] text-slate-500 uppercase block">Authenticity Index</span>
-                <span
-                  className={`text-2xl font-black ${
-                    selectedCompany.trustScore >= 80
-                      ? 'text-emerald-400'
-                      : selectedCompany.trustScore >= 50
-                      ? 'text-amber-400'
-                      : 'text-rose-400'
-                  }`}
+                <h2 className="text-base font-bold text-foreground">{selectedCompany.name}</h2>
+                <a
+                  href={`https://${selectedCompany.domain}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs font-mono text-text-secondary hover:text-foreground inline-flex items-center gap-1"
                 >
+                  <span>{selectedCompany.domain}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+
+              <div className="text-right font-mono">
+                <span className="text-[10px] text-text-muted uppercase block">Trust Score</span>
+                <span className="text-2xl font-black text-foreground">
                   {selectedCompany.trustScore}
-                  <span className="text-xs text-slate-600 font-normal"> / 100</span>
+                  <span className="text-xs text-text-muted font-normal"> / 100</span>
                 </span>
               </div>
             </div>
 
-            {/* Forensic Specs Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-[#080B11] border border-slate-800 text-xs font-mono">
+            {/* Specs Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3.5 rounded-md bg-surface-subtle border border-border font-mono text-[11px]">
               <div>
-                <span className="text-[10px] text-slate-500 uppercase block">Domain Age</span>
-                <span className="text-slate-200">{selectedCompany.domainAge}</span>
+                <span className="text-[10px] text-text-muted uppercase block">Domain Age</span>
+                <span className="text-foreground">{selectedCompany.domainAge}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-500 uppercase block">DNS MX Status</span>
-                <span className={selectedCompany.mxRecordsValid ? 'text-emerald-400' : 'text-rose-400'}>
-                  {selectedCompany.mxRecordsValid ? '✓ Authenticated' : '✕ Invalid / Null'}
+                <span className="text-[10px] text-text-muted uppercase block">DNS MX Status</span>
+                <span className={selectedCompany.mxRecordsValid ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}>
+                  {selectedCompany.mxRecordsValid ? '✓ Valid' : '✕ Invalid'}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-500 uppercase block">Active Scam Alerts</span>
-                <span className={selectedCompany.activeScamAlerts > 0 ? 'text-rose-400' : 'text-slate-400'}>
-                  {selectedCompany.activeScamAlerts} Reported
-                </span>
+                <span className="text-[10px] text-text-muted uppercase block">Scam Alerts</span>
+                <span className="text-foreground">{selectedCompany.activeScamAlerts}</span>
               </div>
             </div>
 
-            {/* Executive Security Summary */}
-            <div className="space-y-2">
-              <h3 className="text-xs font-mono uppercase font-bold text-slate-300 tracking-wider">
-                Corporate Intelligence Summary
-              </h3>
-              <p className="text-xs text-slate-300 leading-relaxed font-sans">
+            {/* Summary */}
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono uppercase text-text-muted font-semibold block">
+                Verification Summary
+              </span>
+              <p className="text-text-secondary leading-relaxed">
                 {selectedCompany.summary}
               </p>
             </div>
 
-            {/* Verified Recruiter Domains */}
-            <div className="space-y-2">
-              <h3 className="text-xs font-mono uppercase font-bold text-slate-300 tracking-wider">
-                Legitimate Hiring Communication Channels
-              </h3>
-              <div className="flex flex-wrap gap-2">
+            {/* Recruiter Channels */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-text-muted font-semibold block">
+                Legitimate Hiring Channels
+              </span>
+              <div className="flex flex-wrap gap-1.5">
                 {selectedCompany.knownRecruiterDomains.map((dom, i) => (
-                  <span
-                    key={i}
-                    className="px-2.5 py-1 rounded-lg bg-[#080B11] border border-slate-800 font-mono text-xs text-sky-300"
-                  >
+                  <span key={i} className="px-2 py-0.5 rounded bg-surface-subtle border border-border font-mono text-[11px] text-foreground">
                     {dom}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Risk & Telemetry Signals */}
-            <div className="space-y-2">
-              <h3 className="text-xs font-mono uppercase font-bold text-slate-300 tracking-wider">
-                Forensic Verification Signals
-              </h3>
-              <div className="space-y-2">
-                {selectedCompany.riskSignals.map((signal, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
-                    <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0 mt-1.5" />
-                    <span>{signal}</span>
-                  </div>
+            {/* Risk Signals */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-text-muted font-semibold block">
+                Verification Observations
+              </span>
+              <ul className="space-y-1 text-text-secondary text-xs">
+                {selectedCompany.riskSignals.map((sig, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-text-muted">•</span>
+                    <span>{sig}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
-            {/* Action Directives */}
-            <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-[11px] text-slate-500 font-mono">
-                Last WHOIS & DNS refresh: Today, 08:30 UTC
+            <div className="pt-3 border-t border-border flex items-center justify-between">
+              <span className="text-[11px] text-text-muted">
+                Industry: {selectedCompany.industry}
               </span>
               <Link
                 to="/analyze"
-                className="inline-flex items-center gap-1.5 text-xs font-mono text-sky-400 hover:text-sky-300 font-semibold"
+                className="text-foreground hover:underline font-medium inline-flex items-center gap-1"
               >
-                <span>Audit a job from {selectedCompany.name}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span>Audit a job from this company</span>
               </Link>
             </div>
 

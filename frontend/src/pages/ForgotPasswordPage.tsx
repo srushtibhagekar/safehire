@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { authService } from '../services/authService';
-import { ShieldCheck, Mail, ArrowLeft, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ export const ForgotPasswordPage: React.FC = () => {
     setError('');
 
     if (!email) {
-      setError('Please provide your registered account email.');
+      setError('Please enter your email.');
       return;
     }
 
@@ -23,65 +23,59 @@ export const ForgotPasswordPage: React.FC = () => {
       await authService.forgotPassword(email);
       setSubmitted(true);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Password reset request failed. Please try again.');
+      setError(err.response?.data?.message || 'Password reset request failed.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 font-sans">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-[75vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 font-sans text-foreground">
+      <div className="w-full max-w-sm space-y-5">
         
-        {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 mx-auto">
-            <ShieldCheck className="w-6 h-6" />
+        <div className="space-y-1">
+          <div className="w-7 h-7 rounded bg-foreground text-background flex items-center justify-center mb-3">
+            <ShieldCheck className="w-4 h-4" />
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
-            Account Recovery
+          <h1 className="text-xl font-bold tracking-tight text-foreground">
+            Reset password
           </h1>
-          <p className="text-xs text-slate-400">
-            Enter your email to receive password reset instructions.
+          <p className="text-xs text-text-secondary">
+            Enter your email to receive recovery instructions.
           </p>
         </div>
 
-        {/* Panel */}
-        <div className="rounded-2xl bg-[#0D121D] border border-slate-800 p-6 sm:p-8 shadow-2xl space-y-5">
+        <div className="p-5 rounded-lg bg-surface border border-border shadow-sm space-y-4">
           {error && (
-            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-300 font-mono">
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-2.5 rounded bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 flex items-start gap-2 text-xs text-rose-700 dark:text-rose-400">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           {submitted ? (
-            <div className="text-center space-y-4 py-4">
-              <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-              <h3 className="text-sm font-bold text-slate-100 font-mono">Reset Link Dispatched</h3>
-              <p className="text-xs text-slate-400">
-                If an account exists for <strong className="text-slate-200">{email}</strong>, you will receive password reset instructions shortly.
+            <div className="text-center space-y-3 py-3">
+              <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mx-auto" />
+              <p className="text-xs text-text-secondary">
+                Instructions have been dispatched to <strong className="text-foreground">{email}</strong>.
               </p>
               <Link
                 to="/login"
-                className="inline-block px-4 py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs"
+                className="inline-block px-3 py-1.5 rounded-md bg-foreground text-background text-xs font-medium"
               >
-                Back to Sign In
+                Return to sign in
               </Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono font-medium text-slate-300 flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Account Email</span>
-                </label>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-foreground">Account email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="analyst@example.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B11] border border-slate-800 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono"
+                  placeholder="name@example.com"
+                  className="w-full px-3 py-1.5 rounded-md bg-surface border border-border text-xs text-foreground placeholder-text-muted focus:outline-none focus:border-zinc-500"
                   required
                 />
               </div>
@@ -89,24 +83,17 @@ export const ForgotPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-50 text-slate-950 font-bold text-xs transition shadow-sm font-sans flex items-center justify-center gap-2 mt-2"
+                className="w-full py-2 rounded-md bg-foreground text-background text-xs font-medium hover:opacity-90 disabled:opacity-50 transition shadow-sm mt-1"
               >
-                {loading ? (
-                  <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <span>Send Recovery Link</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
+                {loading ? 'Sending...' : 'Send reset link'}
               </button>
             </form>
           )}
 
-          <div className="pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
-            <Link to="/login" className="text-slate-400 hover:text-white inline-flex items-center gap-1 font-mono">
+          <div className="pt-3 border-t border-border text-center text-xs">
+            <Link to="/login" className="text-text-secondary hover:text-foreground inline-flex items-center gap-1 font-medium">
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Login</span>
+              <span>Back to sign in</span>
             </Link>
           </div>
         </div>

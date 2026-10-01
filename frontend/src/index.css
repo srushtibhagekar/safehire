@@ -4,49 +4,53 @@
 
 @layer base {
   :root {
-    --background: #080B11;
-    --foreground: #F8FAFC;
-    --card: #0D121D;
-    --card-foreground: #F8FAFC;
-    --card-border: #182234;
-    --border: #1E2B42;
-    --muted: #64748B;
-    --muted-foreground: #94A3B8;
-    --surface: #121826;
-    --surface-hover: #1A2336;
-    --surface-active: #222E46;
+    --background: #FAFAFA;
+    --foreground: #09090B;
+    --surface: #FFFFFF;
+    --surface-subtle: #F4F4F5;
+    --surface-hover: #ECECEE;
+    --border: #E4E4E7;
+    --border-subtle: #F0F0F2;
+    --text-primary: #09090B;
+    --text-secondary: #52525B;
+    --text-muted: #71717A;
+    --accent: #18181B;
+    --accent-foreground: #FAFAFA;
   }
 
-  .light {
-    --background: #F8FAFC;
-    --foreground: #0F172A;
-    --card: #FFFFFF;
-    --card-foreground: #0F172A;
-    --card-border: #E2E8F0;
-    --border: #CBD5E1;
-    --muted: #94A3B8;
-    --muted-foreground: #475569;
-    --surface: #F1F5F9;
-    --surface-hover: #E2E8F0;
-    --surface-active: #CBD5E1;
+  .dark {
+    --background: #09090B;
+    --foreground: #FAFAFA;
+    --surface: #121215;
+    --surface-subtle: #18181B;
+    --surface-hover: #222226;
+    --border: #27272A;
+    --border-subtle: #1C1C20;
+    --text-primary: #FAFAFA;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
+    --accent: #FAFAFA;
+    --accent-foreground: #09090B;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    letter-spacing: -0.011em;
+    letter-spacing: -0.012em;
+    -webkit-font-smoothing: antialiased;
   }
 
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: -0.02em;
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Minimal */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -54,105 +58,64 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #23324C;
-  border-radius: 9999px;
+  background: #D4D4D8;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #3F3F46;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334769;
+  background: #A1A1AA;
 }
 
-/* Precision Hairlines & Panels */
-.security-panel {
-  background-color: var(--card);
-  border: 1px solid var(--card-border);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+/* Semantic Status Tags */
+.status-pill-safe {
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
 }
-
-.security-panel-interactive {
-  background-color: var(--card);
-  border: 1px solid var(--card-border);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.security-panel-interactive:hover {
-  border-color: #2D3E5E;
-  transform: translateY(-1px);
-}
-
-.light .security-panel-interactive:hover {
-  border-color: #94A3B8;
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Security Status Glows */
-.badge-safe {
-  background: rgba(16, 185, 129, 0.1);
+.dark .status-pill-safe {
+  background-color: rgba(6, 95, 70, 0.2);
   color: #34D399;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(52, 211, 153, 0.25);
 }
 
-.badge-caution {
-  background: rgba(245, 158, 11, 0.1);
+.status-pill-caution {
+  background-color: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+.dark .status-pill-caution {
+  background-color: rgba(146, 64, 14, 0.2);
   color: #FBBF24;
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  border: 1px solid rgba(251, 191, 36, 0.25);
 }
 
-.badge-fraud {
-  background: rgba(244, 63, 94, 0.1);
-  color: #FB7185;
-  border: 1px solid rgba(244, 63, 94, 0.25);
+.status-pill-danger {
+  background-color: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+.dark .status-pill-danger {
+  background-color: rgba(153, 27, 27, 0.2);
+  color: #F87171;
+  border: 1px solid rgba(248, 113, 113, 0.25);
 }
 
-.badge-review {
-  background: rgba(14, 165, 233, 0.1);
-  color: #38BDF8;
-  border: 1px solid rgba(14, 165, 233, 0.25);
+.status-pill-neutral {
+  background-color: #F4F4F5;
+  color: #3F3F46;
+  border: 1px solid #E4E4E7;
+}
+.dark .status-pill-neutral {
+  background-color: #18181B;
+  color: #A1A1AA;
+  border: 1px solid #27272A;
 }
 
-/* Laser Scanner Animation */
-@keyframes laserSweep {
-  0% {
-    top: 0%;
-    opacity: 0.8;
-  }
-  50% {
-    top: 96%;
-    opacity: 1;
-  }
-  100% {
-    top: 0%;
-    opacity: 0.8;
-  }
-}
-
-.scanner-laser {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #0EA5E9, #38BDF8, #0EA5E9, transparent);
-  box-shadow: 0 0 15px #0EA5E9, 0 0 5px #38BDF8;
-  animation: laserSweep 3s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 20;
-}
-
-/* Grid overlay background */
-.bg-security-grid {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-}
-
-.light .bg-security-grid {
-  background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-}
-
-/* Print Styles for Official Security Audit Dossier */
+/* Print Styles */
 @media print {
   body {
     background: #FFFFFF !important;
@@ -163,10 +126,5 @@
   }
   .print-only {
     display: block !important;
-  }
-  .security-panel {
-    background: transparent !important;
-    border: 1px solid #CBD5E1 !important;
-    box-shadow: none !important;
   }
 }

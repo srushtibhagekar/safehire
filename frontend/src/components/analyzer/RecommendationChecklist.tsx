@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, AlertOctagon, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle2, AlertOctagon, Info } from 'lucide-react';
 import { ClassificationType } from '../../types/analysis';
 
 interface RecommendationChecklistProps {
@@ -15,116 +15,54 @@ export const RecommendationChecklist: React.FC<RecommendationChecklistProps> = (
   const isCaution = classification === 'NEEDS_CAUTION';
   const isFraud = classification === 'LIKELY_FRAUDULENT';
 
-  const actionProtocols = isFraud
+  const recommendations = isFraud
     ? [
-        {
-          label: 'DO NOT wire or transfer funds for registration, software kits, or background checks.',
-          safe: false,
-        },
-        {
-          label: 'DO NOT deposit advance cashier checks to purchase equipment from designated vendors.',
-          safe: false,
-        },
-        {
-          label: 'DO NOT share SSN, banking credentials, or tax identification on unverified channels.',
-          safe: false,
-        },
-        {
-          label: 'Cease communication with any recruiter insisting exclusively on Telegram/WhatsApp.',
-          safe: true,
-        },
-        {
-          label: 'Report this domain and recruiter handle to the official Federal Trade Commission (FTC) or IC3.',
-          safe: true,
-        },
+        'Do not send money or deposit checks for equipment purchase.',
+        'Do not share personal financial or banking credentials.',
+        'Cease communication if the recruiter insists strictly on Telegram or WhatsApp.',
+        'Report this posting to the platform or relevant regulatory authority.',
       ]
     : isCaution
     ? [
-        {
-          label: 'Verify that the recruiter email matches the official corporate domain, not a public webmail alias.',
-          safe: true,
-        },
-        {
-          label: 'Cross-reference this open position directly on the official company careers portal.',
-          safe: true,
-        },
-        {
-          label: 'Confirm the interview is scheduled through an authenticated video bridge (Google Meet / Teams / Zoom).',
-          safe: true,
-        },
-        {
-          label: 'Clarify unverified compensation claims or unusual hourly rates before executing NDA contracts.',
-          safe: true,
-        },
+        'Verify recruiter email address matches the official company domain.',
+        'Check if this position is listed on the official company careers page.',
+        'Request an authenticated video interview before signing agreements.',
       ]
     : [
-        {
-          label: 'Standard enterprise hiring parameters verified with zero high-risk linguistic indicators.',
-          safe: true,
-        },
-        {
-          label: 'Corporate domain matches authenticated hiring entity and official DNS records.',
-          safe: true,
-        },
-        {
-          label: 'Compensation range aligns with certified industry market compensation benchmarks.',
-          safe: true,
-        },
-        {
-          label: 'Safe to proceed through standard application and interview pipelines.',
-          safe: true,
-        },
+        'Standard hiring parameters verified with zero high-risk indicators.',
+        'Corporate domain and email channels match official company records.',
+        'Safe to proceed with standard application process.',
       ];
 
   return (
-    <div className="rounded-2xl bg-[#0D121D] border border-slate-800 p-6 shadow-sm space-y-4 font-sans">
-      <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
-        <div className="flex items-center gap-2">
-          {isFraud ? (
-            <AlertOctagon className="w-5 h-5 text-rose-400" />
-          ) : (
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-          )}
-          <h3 className="text-sm font-bold text-slate-100 font-mono tracking-tight uppercase">
-            Candidate Security Protocol
-          </h3>
-        </div>
+    <div className="p-5 rounded-lg bg-surface border border-border space-y-3 font-sans">
+      <div className="flex items-center justify-between border-b border-border pb-2.5">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
+          Recommended Actions
+        </h3>
         <span
-          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
-            isFraud
-              ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
-              : isCaution
-              ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-              : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+            isFraud ? 'status-pill-danger' : isCaution ? 'status-pill-caution' : 'status-pill-safe'
           }`}
         >
-          {isFraud ? 'MANDATORY DEFENSE' : isCaution ? 'ADVISORY' : 'VERIFIED SAFE'}
+          {isFraud ? 'Critical Warnings' : isCaution ? 'Advisory' : 'Verified'}
         </span>
       </div>
 
       {recommendationText && (
-        <div className="p-3.5 rounded-xl bg-[#121927] border border-slate-800 text-xs text-slate-300 leading-relaxed">
-          <strong className="text-slate-100 font-semibold font-mono block mb-1">
-            EXECUTIVE ADVISORY:
-          </strong>
+        <p className="text-xs text-text-secondary leading-relaxed bg-surface-subtle p-3 rounded-md border border-border">
           {recommendationText}
-        </div>
+        </p>
       )}
 
-      <div className="space-y-2.5 pt-1">
-        {actionProtocols.map((item, idx) => (
-          <div key={idx} className="flex items-start gap-2.5 text-xs">
-            {item.safe ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            ) : (
-              <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-            )}
-            <span className={item.safe ? 'text-slate-300' : 'text-rose-300 font-medium'}>
-              {item.label}
-            </span>
-          </div>
+      <ul className="space-y-2 pt-1 text-xs text-foreground">
+        {recommendations.map((rec, i) => (
+          <li key={i} className="flex items-start gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-text-muted shrink-0 mt-0.5" />
+            <span className="text-text-secondary leading-normal">{rec}</span>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };

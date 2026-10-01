@@ -4,20 +4,17 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ThemeToggle } from '../common/ThemeToggle';
 import {
   ShieldCheck,
-  ShieldAlert,
-  Sparkles,
-  User as UserIcon,
-  LogOut,
+  Search,
   Menu,
   X,
+  LogOut,
+  User as UserIcon,
+  ChevronDown,
   LayoutDashboard,
   History,
   Bookmark,
   Settings,
-  Building2,
-  Search,
-  Activity,
-  Terminal,
+  ShieldAlert,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -50,146 +47,102 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#080B11]/90 dark:bg-[#080B11]/90 light:bg-white/95 backdrop-blur-md border-b border-slate-800/80 light:border-slate-200 transition-colors duration-200">
-      {/* Top Telemetry Ticker (Subtle) */}
-      <div className="hidden lg:flex items-center justify-between px-6 py-1 bg-[#05070B] border-b border-slate-900 text-[11px] text-slate-400 font-mono">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
-            SAFEHIRE ENGINE ONLINE
-          </span>
-          <span className="text-slate-600">|</span>
-          <span className="text-slate-400">ML Model v2.4 (BERT + Heuristic Rule Engine)</span>
-          <span className="text-slate-600">|</span>
-          <span className="text-slate-400">Detection Latency: ~140ms</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={triggerCommandPalette}
-            className="flex items-center gap-1.5 text-slate-400 hover:text-sky-400 transition-colors"
-          >
-            <span>Quick Command</span>
-            <kbd className="px-1.5 py-0.2 rounded bg-slate-800 text-[10px] text-slate-300 border border-slate-700">
-              Ctrl+K
-            </kbd>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Navigation Bar */}
+    <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-border transition-colors duration-150">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
           
-          {/* Brand Logo */}
+          {/* Brand & Left Navigation */}
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 group-hover:border-sky-400 group-hover:bg-sky-500/20 transition-all duration-200">
-                <ShieldCheck className="w-5 h-5" />
+              <div className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center font-bold">
+                <ShieldCheck className="w-4 h-4" />
               </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-bold text-lg tracking-tight text-slate-100 group-hover:text-white transition-colors">
-                  Safe<span className="text-sky-400 font-extrabold">Hire</span>
-                </span>
-                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest hidden sm:inline-block">
-                  INTEL
-                </span>
-              </div>
+              <span className="font-semibold text-sm tracking-tight text-foreground">
+                SafeHire
+              </span>
             </Link>
 
             {/* Desktop Navigation Links */}
             <nav className="hidden md:flex items-center gap-1 text-xs font-medium">
               <Link
                 to="/"
-                className={`px-3 py-1.5 rounded-lg transition-colors ${
-                  isActive('/') && location.pathname === '/'
-                    ? 'bg-slate-800 text-sky-400 font-semibold'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                className={`px-3 py-1.5 rounded-md transition-colors ${
+                  location.pathname === '/'
+                    ? 'text-foreground font-semibold bg-surface-subtle'
+                    : 'text-text-secondary hover:text-foreground hover:bg-surface-hover'
                 }`}
               >
                 Overview
               </Link>
               <Link
                 to="/analyze"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+                className={`px-3 py-1.5 rounded-md transition-colors ${
                   isActive('/analyze') || isActive('/results')
-                    ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-semibold'
-                    : 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/50'
+                    ? 'text-foreground font-semibold bg-surface-subtle'
+                    : 'text-text-secondary hover:text-foreground hover:bg-surface-hover'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-                <span>Analyze Job</span>
+                Analyze
               </Link>
               <Link
                 to="/companies"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors ${
+                className={`px-3 py-1.5 rounded-md transition-colors ${
                   isActive('/companies')
-                    ? 'bg-slate-800 text-sky-400 font-semibold'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                    ? 'text-foreground font-semibold bg-surface-subtle'
+                    : 'text-text-secondary hover:text-foreground hover:bg-surface-hover'
                 }`}
               >
-                <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                <span>Companies</span>
+                Companies
               </Link>
               <Link
                 to="/how-it-works"
-                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                className={`px-3 py-1.5 rounded-md transition-colors ${
                   isActive('/how-it-works')
-                    ? 'bg-slate-800 text-sky-400 font-semibold'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                    ? 'text-foreground font-semibold bg-surface-subtle'
+                    : 'text-text-secondary hover:text-foreground hover:bg-surface-hover'
                 }`}
               >
                 Methodology
-              </Link>
-              <Link
-                to="/about"
-                className={`px-3 py-1.5 rounded-lg transition-colors ${
-                  isActive('/about')
-                    ? 'bg-slate-800 text-sky-400 font-semibold'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-                }`}
-              >
-                About
               </Link>
 
               {isAuthenticated && (
                 <Link
                   to="/dashboard"
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors ${
+                  className={`px-3 py-1.5 rounded-md transition-colors ${
                     isActive('/dashboard')
-                      ? 'bg-slate-800 text-sky-400 font-semibold'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                      ? 'text-foreground font-semibold bg-surface-subtle'
+                      : 'text-text-secondary hover:text-foreground hover:bg-surface-hover'
                   }`}
                 >
-                  <Activity className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Dashboard</span>
+                  Dashboard
                 </Link>
               )}
 
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/20 hover:bg-rose-500/20 transition ${
-                    isActive('/admin') ? 'ring-1 ring-rose-400 font-semibold' : ''
+                  className={`px-3 py-1.5 rounded-md text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors ${
+                    isActive('/admin') ? 'font-semibold bg-rose-500/10' : ''
                   }`}
                 >
-                  <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-                  <span>Admin SOC</span>
+                  Admin
                 </Link>
               )}
             </nav>
           </div>
 
           {/* Right Action Controls */}
-          <div className="hidden md:flex items-center gap-3">
-            {/* Quick Search Button */}
+          <div className="hidden md:flex items-center gap-2.5">
+            {/* Command Palette Trigger */}
             <button
               onClick={triggerCommandPalette}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700 text-xs transition"
-              title="Search commands and job records"
+              className="flex items-center gap-3 px-2.5 py-1.5 rounded-md bg-surface-subtle border border-border text-text-secondary hover:text-foreground hover:border-zinc-400 dark:hover:border-zinc-600 text-xs transition"
             >
-              <Search className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-slate-400">Search...</span>
-              <kbd className="px-1.5 py-0.2 rounded bg-slate-800 text-[10px] font-mono text-slate-400 border border-slate-700">
+              <div className="flex items-center gap-1.5">
+                <Search className="w-3.5 h-3.5 text-text-muted" />
+                <span>Search...</span>
+              </div>
+              <kbd className="px-1.5 py-0.5 rounded bg-surface border border-border text-[10px] font-mono text-text-muted">
                 ⌘K
               </kbd>
             </button>
@@ -200,77 +153,75 @@ export const Navbar: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-[#0D121D] hover:bg-slate-800 text-slate-200 transition text-xs"
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-border bg-surface hover:bg-surface-hover text-foreground text-xs font-medium transition"
                 >
-                  <div className="w-6 h-6 rounded-md bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-300 font-mono font-bold text-xs">
+                  <div className="w-5 h-5 rounded bg-surface-subtle border border-border flex items-center justify-center font-mono font-bold text-[10px]">
                     {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                   </div>
-                  <span className="font-medium max-w-[100px] truncate">{user?.name}</span>
+                  <span className="truncate max-w-[100px]">{user?.name}</span>
+                  <ChevronDown className="w-3 h-3 text-text-muted" />
                 </button>
 
                 {userDropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-60 rounded-xl bg-[#0D121D] border border-slate-800 shadow-2xl py-2 z-50 text-xs font-sans"
+                    className="absolute right-0 mt-1.5 w-52 rounded-lg bg-surface border border-border shadow-lg py-1.5 z-50 text-xs"
                     onMouseLeave={() => setUserDropdownOpen(false)}
                   >
-                    <div className="px-4 py-2.5 border-b border-slate-800 mb-1">
-                      <p className="font-semibold text-slate-200 truncate">{user?.name}</p>
-                      <p className="text-slate-400 text-[11px] font-mono truncate">{user?.email}</p>
-                      <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-sky-400 font-mono uppercase">
-                        Role: {user?.role}
-                      </span>
+                    <div className="px-3 py-2 border-b border-border mb-1">
+                      <p className="font-semibold text-foreground truncate">{user?.name}</p>
+                      <p className="text-text-muted text-[11px] truncate font-mono">{user?.email}</p>
                     </div>
 
                     <Link
                       to="/dashboard"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                      className="flex items-center gap-2 px-3 py-1.5 text-text-secondary hover:text-foreground hover:bg-surface-hover"
                     >
-                      <LayoutDashboard className="w-4 h-4 text-sky-400" />
-                      Intelligence Dashboard
+                      <LayoutDashboard className="w-3.5 h-3.5" />
+                      Dashboard
                     </Link>
                     <Link
                       to="/history"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                      className="flex items-center gap-2 px-3 py-1.5 text-text-secondary hover:text-foreground hover:bg-surface-hover"
                     >
-                      <History className="w-4 h-4 text-slate-400" />
+                      <History className="w-3.5 h-3.5" />
                       Verification History
                     </Link>
                     <Link
                       to="/saved"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                      className="flex items-center gap-2 px-3 py-1.5 text-text-secondary hover:text-foreground hover:bg-surface-hover"
                     >
-                      <Bookmark className="w-4 h-4 text-amber-400" />
-                      Saved Dossiers
+                      <Bookmark className="w-3.5 h-3.5" />
+                      Saved Analyses
                     </Link>
                     <Link
                       to="/profile"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                      className="flex items-center gap-2 px-3 py-1.5 text-text-secondary hover:text-foreground hover:bg-surface-hover"
                     >
-                      <Settings className="w-4 h-4 text-slate-400" />
-                      Security & Settings
+                      <Settings className="w-3.5 h-3.5" />
+                      Settings & Keys
                     </Link>
 
                     {isAdmin && (
                       <Link
                         to="/admin"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2 text-rose-300 hover:bg-rose-950/30"
+                        className="flex items-center gap-2 px-3 py-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10"
                       >
-                        <ShieldAlert className="w-4 h-4 text-rose-400" />
-                        Admin Security Console
+                        <ShieldAlert className="w-3.5 h-3.5" />
+                        Admin Console
                       </Link>
                     )}
 
-                    <div className="border-t border-slate-800 mt-1 pt-1">
+                    <div className="border-t border-border mt-1 pt-1">
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-4 py-2 text-rose-400 hover:bg-rose-500/10 text-left"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-left"
                       >
-                        <LogOut className="w-4 h-4" />
+                        <LogOut className="w-3.5 h-3.5" />
                         Sign Out
                       </button>
                     </div>
@@ -281,33 +232,32 @@ export const Navbar: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition"
+                  className="px-3 py-1.5 text-xs font-medium rounded-md text-text-secondary hover:text-foreground transition"
                 >
-                  Sign In
+                  Sign in
                 </Link>
                 <Link
                   to="/register"
-                  className="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 transition shadow-sm font-sans font-medium"
+                  className="px-3 py-1.5 text-xs font-medium rounded-md bg-foreground text-background hover:opacity-90 transition"
                 >
-                  Create Account
+                  Sign up
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Trigger */}
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={triggerCommandPalette}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
-              aria-label="Search"
+              className="p-1.5 rounded-md text-text-secondary hover:text-foreground"
             >
               <Search className="w-4 h-4" />
             </button>
             <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800"
+              className="p-1.5 rounded-md text-text-secondary hover:text-foreground"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -315,108 +265,83 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-800 bg-[#0D121D] px-4 pt-3 pb-6 space-y-3 font-sans">
+        <div className="md:hidden border-b border-border bg-surface px-4 py-3 space-y-2 text-xs">
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-slate-200 font-medium text-sm border-b border-slate-800/50"
+            className="block py-1.5 text-foreground font-medium"
           >
             Overview
           </Link>
           <Link
             to="/analyze"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 py-2 text-sky-400 font-semibold text-sm border-b border-slate-800/50"
+            className="block py-1.5 text-foreground font-medium"
           >
-            <Sparkles className="w-4 h-4" />
-            Analyze Job Posting
+            Analyze Job
           </Link>
           <Link
             to="/companies"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 py-2 text-slate-200 font-medium text-sm border-b border-slate-800/50"
+            className="block py-1.5 text-foreground font-medium"
           >
-            <Building2 className="w-4 h-4 text-slate-400" />
-            Company Verification
+            Companies
           </Link>
           <Link
             to="/how-it-works"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-slate-300 font-medium text-sm border-b border-slate-800/50"
+            className="block py-1.5 text-text-secondary"
           >
             Methodology
           </Link>
-          <Link
-            to="/about"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-slate-300 font-medium text-sm border-b border-slate-800/50"
-          >
-            About
-          </Link>
 
           {isAuthenticated ? (
-            <div className="pt-2 space-y-2">
+            <div className="border-t border-border pt-2 space-y-1.5">
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-1.5 text-sm text-slate-300"
+                className="block py-1.5 text-foreground font-medium"
               >
-                Intelligence Dashboard
+                Dashboard
               </Link>
               <Link
                 to="/history"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-1.5 text-sm text-slate-300"
+                className="block py-1.5 text-text-secondary"
               >
                 Verification History
               </Link>
               <Link
                 to="/saved"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-1.5 text-sm text-slate-300"
+                className="block py-1.5 text-text-secondary"
               >
-                Saved Dossiers
+                Saved Analyses
               </Link>
-              <Link
-                to="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-1.5 text-sm text-slate-300"
-              >
-                Settings & Credentials
-              </Link>
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-1.5 text-sm text-rose-400 font-semibold"
-                >
-                  Admin Security Console
-                </Link>
-              )}
               <button
                 onClick={handleLogout}
-                className="w-full text-left py-2 text-sm text-rose-400 font-medium"
+                className="w-full text-left py-1.5 text-rose-600 dark:text-rose-400"
               >
                 Sign Out
               </button>
             </div>
           ) : (
-            <div className="pt-4 flex flex-col gap-2">
+            <div className="pt-2 flex items-center gap-2 border-t border-border">
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg border border-slate-700 text-sm font-semibold text-slate-200"
+                className="flex-1 text-center py-2 rounded-md border border-border text-foreground font-medium"
               >
-                Sign In
+                Sign in
               </Link>
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg bg-sky-500 text-slate-950 text-sm font-semibold"
+                className="flex-1 text-center py-2 rounded-md bg-foreground text-background font-medium"
               >
-                Create Account
+                Sign up
               </Link>
             </div>
           )}

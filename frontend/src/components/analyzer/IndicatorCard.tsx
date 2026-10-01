@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  AlertOctagon,
-  AlertTriangle,
-  Info,
-  ChevronDown,
-  ChevronUp,
-  FileCode,
-  ShieldCheck,
-  Search,
-} from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertOctagon, AlertTriangle, Info } from 'lucide-react';
 import { FraudIndicator, SeverityType } from '../../types/analysis';
 
 interface IndicatorCardProps {
@@ -20,82 +11,65 @@ interface IndicatorCardProps {
 export const IndicatorCard: React.FC<IndicatorCardProps> = ({ indicator, index = 0 }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const getSeverityBadge = (severity: SeverityType) => {
+  const getSeverityStyle = (severity: SeverityType) => {
     switch (severity) {
       case 'CRITICAL':
-        return {
-          label: 'CRITICAL SEVERITY',
-          icon: AlertOctagon,
-          classes: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-          borderLeft: 'border-l-rose-500',
-        };
       case 'HIGH':
         return {
-          label: 'HIGH SEVERITY',
+          label: 'HIGH RISK',
+          pill: 'status-pill-danger',
           icon: AlertOctagon,
-          classes: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-          borderLeft: 'border-l-rose-500',
         };
       case 'MEDIUM':
         return {
-          label: 'MEDIUM SEVERITY',
+          label: 'WARNING',
+          pill: 'status-pill-caution',
           icon: AlertTriangle,
-          classes: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-          borderLeft: 'border-l-amber-500',
         };
       case 'LOW':
       default:
         return {
-          label: 'INFORMATIONAL / LOW',
+          label: 'INFO',
+          pill: 'status-pill-neutral',
           icon: Info,
-          classes: 'bg-sky-500/10 text-sky-400 border-sky-500/30',
-          borderLeft: 'border-l-sky-500',
         };
     }
   };
 
-  const sev = getSeverityBadge(indicator.severity);
+  const sev = getSeverityStyle(indicator.severity);
   const Icon = sev.icon;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.2 }}
-      className={`rounded-xl bg-[#0D121D] border border-slate-800/90 border-l-4 ${sev.borderLeft} overflow-hidden shadow-sm hover:border-slate-700 transition`}
-    >
+    <div className="rounded-lg bg-surface border border-border overflow-hidden transition-colors">
       <div
         onClick={() => setExpanded(!expanded)}
-        className="p-4 cursor-pointer flex items-start justify-between gap-4 select-none"
+        className="p-3.5 cursor-pointer flex items-start justify-between gap-3 hover:bg-surface-hover/50 transition-colors select-none"
       >
-        <div className="space-y-1.5 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono uppercase font-semibold border ${sev.classes}`}
-            >
+        <div className="space-y-1 flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold ${sev.pill}`}>
               <Icon className="w-3 h-3" />
               {sev.label}
             </span>
-            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] font-mono text-text-muted">
               {indicator.type.replace(/_/g, ' ')}
             </span>
           </div>
-
-          <h4 className="text-sm font-semibold text-slate-100 leading-snug">
+          <h4 className="text-xs font-semibold text-foreground leading-snug">
             {indicator.title}
           </h4>
-
-          <p className="text-xs text-slate-400 leading-relaxed">
-            {indicator.explanation}
-          </p>
         </div>
 
-        <div className="shrink-0 pt-1 text-slate-400">
-          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </div>
+        <button
+          type="button"
+          className="text-text-muted hover:text-foreground text-xs flex items-center gap-1 shrink-0 pt-0.5"
+        >
+          <span className="text-[11px] font-mono">{expanded ? 'Hide evidence' : 'View evidence'}</span>
+          {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
       </div>
 
-      {/* Collapsible Evidence Section */}
+      {/* Expandable Evidence Drawer */}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -103,23 +77,30 @@ export const IndicatorCard: React.FC<IndicatorCardProps> = ({ indicator, index =
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.15 }}
-            className="px-4 pb-4 pt-1 bg-[#101725] border-t border-slate-800/80 space-y-2 text-xs"
+            className="px-3.5 pb-3.5 pt-2 border-t border-border-subtle bg-surface-subtle/60 space-y-2.5 text-xs font-sans"
           >
-            <div className="flex items-center gap-1.5 text-slate-400 font-mono text-[11px]">
-              <Search className="w-3.5 h-3.5 text-sky-400" />
-              <span>Extracted Signal Evidence & Forensic Tokens</span>
+            <div>
+              <span className="text-[10px] font-mono text-text-muted uppercase font-semibold block">
+                Why this was flagged
+              </span>
+              <p className="text-text-secondary text-xs leading-relaxed mt-0.5">
+                {indicator.explanation}
+              </p>
             </div>
 
-            <div className="p-2.5 rounded-lg bg-[#080B11] border border-slate-800 font-mono text-slate-300 text-[11px] leading-relaxed break-words">
-              {indicator.evidence || 'Pattern recognized via BERT semantic classification vector analysis.'}
-            </div>
-
-            <p className="text-[11px] text-slate-400 font-sans">
-              <strong className="text-slate-300">Security Recommendation:</strong> Compare this signal with the official domain records and avoid sending sensitive documents or executing off-platform wire transfers.
-            </p>
+            {indicator.evidence && (
+              <div className="p-2.5 rounded bg-surface border border-border space-y-1">
+                <span className="text-[10px] font-mono text-text-muted uppercase font-semibold block">
+                  Detected signal in text
+                </span>
+                <p className="font-mono text-foreground text-[11px] leading-relaxed break-words">
+                  "{indicator.evidence}"
+                </p>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };

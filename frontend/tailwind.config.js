@@ -7,43 +7,34 @@ export default {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
-        card: {
-          DEFAULT: 'var(--card)',
-          foreground: 'var(--card-foreground)',
-          border: 'var(--card-border)',
-        },
         surface: {
           DEFAULT: 'var(--surface)',
+          subtle: 'var(--surface-subtle)',
           hover: 'var(--surface-hover)',
-          active: 'var(--surface-active)',
         },
-        brand: {
-          50: '#F0F9FF',
-          100: '#E0F2FE',
-          500: '#0EA5E9',
-          600: '#0284C7',
-          700: '#0369A1',
+        border: {
+          DEFAULT: 'var(--border)',
+          subtle: 'var(--border-subtle)',
         },
-        accent: {
-          blue: '#3B82F6',
-          cyan: '#06B6D4',
-          indigo: '#6366F1',
-          slate: '#334155',
+        primary: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
         },
-        risk: {
+        status: {
           safe: '#10B981',
           caution: '#F59E0B',
-          fraud: '#F43F5E',
-          review: '#0EA5E9',
+          danger: '#EF4444',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
       },
-      animation: {
-        'pulse-subtle': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'spin-slow': 'spin 12s linear infinite',
+      borderRadius: {
+        DEFAULT: '6px',
+        md: '8px',
+        lg: '10px',
+        xl: '12px',
       },
     },
   },

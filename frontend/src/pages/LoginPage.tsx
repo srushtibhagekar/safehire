@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import {
-  ShieldCheck,
-  Mail,
-  Lock,
-  ArrowRight,
-  AlertCircle,
-  Sparkles,
-  Terminal,
-} from 'lucide-react';
+import { ShieldCheck, AlertCircle } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -28,7 +20,7 @@ export const LoginPage: React.FC = () => {
     setError('');
 
     if (!email || !password) {
-      setError('Please provide your email address and password.');
+      setError('Please enter your email and password.');
       return;
     }
 
@@ -44,57 +36,48 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 font-sans">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-[75vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 font-sans text-foreground">
+      <div className="w-full max-w-sm space-y-5">
         
-        {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 mx-auto">
-            <ShieldCheck className="w-6 h-6" />
+        {/* Header */}
+        <div className="space-y-1">
+          <div className="w-7 h-7 rounded bg-foreground text-background flex items-center justify-center mb-3">
+            <ShieldCheck className="w-4 h-4" />
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
-            Sign In to SafeHire
+          <h1 className="text-xl font-bold tracking-tight text-foreground">
+            Sign in to SafeHire
           </h1>
-          <p className="text-xs text-slate-400">
-            Access your threat dashboard, saved dossiers, and inspection telemetry.
+          <p className="text-xs text-text-secondary">
+            Access your verification workspace and saved analyses.
           </p>
         </div>
 
-        {/* Auth Panel */}
-        <div className="rounded-2xl bg-[#0D121D] border border-slate-800 p-6 sm:p-8 shadow-2xl space-y-5">
+        {/* Panel */}
+        <div className="p-5 rounded-lg bg-surface border border-border shadow-sm space-y-4">
           {error && (
-            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-300 font-mono">
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-2.5 rounded bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 flex items-start gap-2 text-xs text-rose-700 dark:text-rose-400">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-mono font-medium text-slate-300 flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-slate-500" />
-                <span>Account Email</span>
-              </label>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground">Email address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="analyst@example.com"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B11] border border-slate-800 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono"
+                placeholder="name@example.com"
+                className="w-full px-3 py-1.5 rounded-md bg-surface border border-border text-xs text-foreground placeholder-text-muted focus:outline-none focus:border-zinc-500"
                 required
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-mono font-medium text-slate-300 flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Password</span>
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-[11px] font-mono text-sky-400 hover:underline"
-                >
+                <label className="text-xs font-medium text-foreground">Password</label>
+                <Link to="/forgot-password" className="text-[11px] text-text-secondary hover:text-foreground">
                   Forgot password?
                 </Link>
               </div>
@@ -103,7 +86,7 @@ export const LoginPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B11] border border-slate-800 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono"
+                className="w-full px-3 py-1.5 rounded-md bg-surface border border-border text-xs text-foreground placeholder-text-muted focus:outline-none focus:border-zinc-500"
                 required
               />
             </div>
@@ -111,32 +94,18 @@ export const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-50 text-slate-950 font-bold text-xs transition shadow-sm font-sans flex items-center justify-center gap-2 mt-2"
+              className="w-full py-2 rounded-md bg-foreground text-background text-xs font-medium hover:opacity-90 disabled:opacity-50 transition shadow-sm mt-1"
             >
-              {loading ? (
-                <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>Authenticate Session</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
+              {loading ? 'Authenticating...' : 'Sign in'}
             </button>
           </form>
 
-          <div className="pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+          <div className="pt-3 border-t border-border text-center text-xs text-text-secondary">
             <span>Don't have an account? </span>
-            <Link to="/register" className="text-sky-400 hover:underline font-semibold font-mono">
-              Create one now
+            <Link to="/register" className="text-foreground hover:underline font-medium">
+              Sign up
             </Link>
           </div>
-        </div>
-
-        {/* Demo Credentials Box */}
-        <div className="p-3.5 rounded-xl bg-[#0B0F19] border border-slate-800/80 text-[11px] font-mono text-slate-400 space-y-1 text-center">
-          <span className="text-slate-300 font-semibold block">Demo Accounts</span>
-          <div>Admin: <code className="text-sky-400">admin@safehire.ai</code> / <code className="text-slate-300">Admin@1234</code></div>
-          <div>User: <code className="text-sky-400">user@safehire.ai</code> / <code className="text-slate-300">User@1234</code></div>
         </div>
 
       </div>

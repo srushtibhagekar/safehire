@@ -2,18 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { analysisService } from '../services/analysisService';
 import { Analysis } from '../types/analysis';
-import {
-  ShieldCheck,
-  ShieldAlert,
-  AlertTriangle,
-  Printer,
-  ArrowLeft,
-  Calendar,
-  Building,
-  Lock,
-  FileCheck,
-  Download,
-} from 'lucide-react';
+import { ShieldCheck, Printer, ArrowLeft } from 'lucide-react';
 
 export const ReportViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,184 +32,163 @@ export const ReportViewPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-3 font-mono">
-        <div className="w-8 h-8 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs text-slate-400">Compiling official security audit dossier...</p>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-2 text-xs text-text-muted font-mono">
+        <div className="w-5 h-5 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+        <p>Loading formal report...</p>
       </div>
     );
   }
 
   if (!analysis) {
     return (
-      <div className="max-w-xl mx-auto py-16 text-center space-y-4 font-sans">
-        <ShieldAlert className="w-12 h-12 text-rose-400 mx-auto" />
-        <h2 className="text-xl font-bold text-slate-100">Report Record Unavailable</h2>
-        <Link to="/analyze" className="inline-block px-4 py-2 rounded-lg bg-sky-500 text-slate-950 text-xs font-bold">
-          Return to Scanner
+      <div className="max-w-md mx-auto py-16 text-center space-y-3 font-sans">
+        <h2 className="text-base font-bold text-foreground">Report Not Found</h2>
+        <Link to="/analyze" className="inline-block px-3 py-1.5 rounded-md bg-foreground text-background text-xs font-medium">
+          Return to Analyzer
         </Link>
       </div>
     );
   }
 
   const job = analysis.jobPost;
-  const isGenuine = analysis.classification === 'LIKELY_GENUINE';
-  const isCaution = analysis.classification === 'NEEDS_CAUTION';
-  const isFraud = analysis.classification === 'LIKELY_FRAUDULENT';
   const trustScore = 100 - analysis.riskScore;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 font-sans text-foreground">
       
-      {/* Action Header (Hidden in Print) */}
-      <div className="no-print flex items-center justify-between border-b border-slate-800 pb-4">
+      {/* Top Bar (Hidden in Print) */}
+      <div className="no-print flex items-center justify-between border-b border-border pb-3">
         <Link
           to={`/results/${analysis.id || (analysis as any)._id}`}
-          className="inline-flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition"
+          className="inline-flex items-center gap-1.5 text-xs text-text-secondary hover:text-foreground transition"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Analysis Workspace</span>
+          <span>Back to Analysis</span>
         </Link>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition shadow-sm font-sans"
-          >
-            <Printer className="w-4 h-4 text-slate-950" />
-            <span>Print / Save PDF Dossier</span>
-          </button>
-        </div>
+        <button
+          onClick={handlePrint}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-foreground text-background text-xs font-medium hover:opacity-90 transition shadow-sm"
+        >
+          <Printer className="w-3.5 h-3.5" />
+          <span>Print / Save PDF</span>
+        </button>
       </div>
 
-      {/* Official Security Report Document Container */}
-      <div className="p-8 sm:p-12 rounded-2xl bg-[#0D121D] border border-slate-800 shadow-2xl space-y-8 print:p-0 print:border-none print:shadow-none">
+      {/* Official Report Document */}
+      <div className="p-8 sm:p-10 rounded-lg bg-surface border border-border shadow-sm space-y-6 print:border-none print:shadow-none print:p-0">
         
-        {/* Dossier Header */}
-        <div className="border-b border-slate-800 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+        {/* Header */}
+        <div className="border-b border-border pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-sky-400" />
-              <span className="text-lg font-bold text-slate-100 font-mono tracking-tight">
-                SafeHire Intelligence Platform
-              </span>
+              <div className="w-5 h-5 rounded bg-foreground text-background flex items-center justify-center">
+                <ShieldCheck className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-bold text-foreground text-sm">SafeHire Verification Report</span>
             </div>
-            <p className="text-xs text-slate-400">Official Recruitment Security Audit & Threat Assessment</p>
+            <p className="text-xs text-text-muted">Recruitment Fraud & Job Authenticity Assessment</p>
           </div>
 
-          <div className="text-left sm:text-right font-mono text-xs text-slate-400 space-y-0.5">
-            <div>Audit ID: #{analysis.id || (analysis as any)._id || 'DOC-2026-01'}</div>
-            <div>Date: {new Date(analysis.createdAt).toLocaleDateString()}</div>
-            <div className="text-emerald-400 text-[11px]">Status: Cryptographically Certified</div>
-          </div>
-        </div>
-
-        {/* Executive Verdict Matrix */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-[#080B11] border border-slate-800">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono uppercase text-slate-500">Classification</span>
-            <div
-              className={`text-sm font-bold font-mono ${
-                isGenuine ? 'text-emerald-400' : isCaution ? 'text-amber-400' : 'text-rose-400'
-              }`}
-            >
-              {analysis.classification.replace(/_/g, ' ')}
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono uppercase text-slate-500">Trust Score</span>
-            <div className="text-sm font-bold font-mono text-slate-100">
-              {trustScore} / 100 <span className="text-xs text-slate-500">({analysis.confidence}% conf.)</span>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono uppercase text-slate-500">Risk Assessment</span>
-            <div className="text-sm font-mono text-slate-300">
-              {analysis.riskScore} / 100 Risk Index
-            </div>
+          <div className="text-left sm:text-right font-mono text-xs text-text-muted">
+            <div>Report #{analysis.id?.substring(0, 8) || (analysis as any)._id?.substring(0, 8)}</div>
+            <div>{new Date(analysis.createdAt).toLocaleDateString()}</div>
           </div>
         </div>
 
-        {/* Section 1: Subject Job Information */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-mono uppercase font-bold text-slate-300 tracking-wider border-b border-slate-800 pb-1.5">
-            1. Target Entity & Job Profile
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-            <div>
-              <span className="text-[10px] text-slate-500 uppercase block">Job Title</span>
-              <span className="text-slate-200 font-semibold">{job?.title || 'N/A'}</span>
-            </div>
-            <div>
-              <span className="text-[10px] text-slate-500 uppercase block">Hiring Entity</span>
-              <span className="text-slate-200 font-semibold">{job?.companyName || 'N/A'}</span>
-            </div>
-            <div>
-              <span className="text-[10px] text-slate-500 uppercase block">Location</span>
-              <span className="text-slate-300">{job?.location || 'Unspecified'}</span>
-            </div>
-            <div>
-              <span className="text-[10px] text-slate-500 uppercase block">Salary Band</span>
-              <span className="text-sky-400">{job?.salary || 'Not Provided'}</span>
-            </div>
+        {/* Verdict Box */}
+        <div className="grid grid-cols-3 gap-3 p-3.5 rounded-md bg-surface-subtle border border-border text-xs font-mono">
+          <div>
+            <span className="text-[10px] text-text-muted uppercase block">Classification</span>
+            <span className="font-bold text-foreground">{analysis.classification.replace(/_/g, ' ')}</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-text-muted uppercase block">Trust Score</span>
+            <span className="font-bold text-foreground">{trustScore} / 100</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-text-muted uppercase block">Confidence</span>
+            <span className="font-bold text-foreground">{analysis.confidence}%</span>
           </div>
         </div>
 
-        {/* Section 2: Executive Assessment */}
+        {/* Job Information */}
         <div className="space-y-2">
-          <h3 className="text-xs font-mono uppercase font-bold text-slate-300 tracking-wider border-b border-slate-800 pb-1.5">
-            2. Heuristic Audit Summary
+          <h3 className="text-xs font-mono uppercase text-text-muted font-bold tracking-wider border-b border-border pb-1">
+            1. Job Post Target
           </h3>
-          <p className="text-xs text-slate-300 leading-relaxed font-sans">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+            <div>
+              <span className="text-[10px] text-text-muted uppercase block">Title</span>
+              <span className="text-foreground">{job?.title || 'N/A'}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-text-muted uppercase block">Company</span>
+              <span className="text-foreground">{job?.companyName || 'N/A'}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-text-muted uppercase block">Location</span>
+              <span className="text-foreground">{job?.location || 'Unspecified'}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-text-muted uppercase block">Salary</span>
+              <span className="text-foreground">{job?.salary || 'N/A'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div className="space-y-1.5">
+          <h3 className="text-xs font-mono uppercase text-text-muted font-bold tracking-wider border-b border-border pb-1">
+            2. Executive Assessment
+          </h3>
+          <p className="text-xs text-text-secondary leading-relaxed">
             {analysis.summary}
           </p>
         </div>
 
-        {/* Section 3: Detailed Forensic Signal Log */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-mono uppercase font-bold text-slate-300 tracking-wider border-b border-slate-800 pb-1.5">
-            3. Forensic Threat Indicators ({analysis.indicators?.length || 0})
+        {/* Detected Signals */}
+        <div className="space-y-2">
+          <h3 className="text-xs font-mono uppercase text-text-muted font-bold tracking-wider border-b border-border pb-1">
+            3. Forensic Indicators ({analysis.indicators?.length || 0})
           </h3>
-
-          <div className="space-y-2">
-            {analysis.indicators && analysis.indicators.length > 0 ? (
-              analysis.indicators.map((ind, i) => (
-                <div key={i} className="p-3 rounded-lg bg-[#080B11] border border-slate-800 text-xs space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-200">{ind.title}</span>
-                    <span className="font-mono text-[10px] text-rose-400 uppercase">[{ind.severity}]</span>
+          {analysis.indicators && analysis.indicators.length > 0 ? (
+            <div className="space-y-2">
+              {analysis.indicators.map((ind, i) => (
+                <div key={i} className="p-2.5 rounded bg-surface-subtle border border-border text-xs space-y-1">
+                  <div className="flex items-center justify-between font-mono">
+                    <span className="font-semibold text-foreground">{ind.title}</span>
+                    <span className="text-[10px] text-text-muted uppercase">[{ind.severity}]</span>
                   </div>
-                  <p className="text-slate-400 text-[11px]">{ind.explanation}</p>
+                  <p className="text-text-secondary text-[11px]">{ind.explanation}</p>
                   {ind.evidence && (
-                    <p className="font-mono text-[10px] text-sky-400 bg-slate-900 p-1.5 rounded">
-                      Evidence: {ind.evidence}
+                    <p className="font-mono text-[10px] text-foreground bg-surface p-1.5 rounded border border-border">
+                      "{ind.evidence}"
                     </p>
                   )}
                 </div>
-              ))
-            ) : (
-              <p className="text-xs text-emerald-400 font-mono">
-                ✓ No high-risk fraudulent indicators identified during deep heuristic sweep.
-              </p>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-emerald-700 dark:text-emerald-400 font-mono">
+              ✓ No high-risk indicators detected.
+            </p>
+          )}
         </div>
 
-        {/* Section 4: Security Protocols */}
-        <div className="space-y-2">
-          <h3 className="text-xs font-mono uppercase font-bold text-slate-300 tracking-wider border-b border-slate-800 pb-1.5">
-            4. Candidate Defense Directives
+        {/* Recommendations */}
+        <div className="space-y-1.5">
+          <h3 className="text-xs font-mono uppercase text-text-muted font-bold tracking-wider border-b border-border pb-1">
+            4. Guidance for Applicant
           </h3>
-          <p className="text-xs text-slate-300 leading-relaxed font-sans">
+          <p className="text-xs text-text-secondary leading-relaxed">
             {analysis.recommendation}
           </p>
         </div>
 
-        {/* Signoff / Certification Footer */}
-        <div className="pt-6 border-t border-slate-800 flex items-center justify-between text-[10px] font-mono text-slate-500">
-          <div>Generated by SafeHire Core Heuristic & NLP Classification Engine v2.4</div>
-          <div>Cryptographic Verification Hash: SHA-256 Validated</div>
+        <div className="pt-4 border-t border-border flex items-center justify-between text-[10px] font-mono text-text-muted">
+          <span>SafeHire Core Verification System</span>
+          <span>Zero PII Stored</span>
         </div>
 
       </div>
