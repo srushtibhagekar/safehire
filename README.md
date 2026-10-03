@@ -1,6 +1,5 @@
 # SafeHire — AI-Powered Recruitment Fraud Detection System
 
-> **Verify Before You Apply.**
 > 
 > *A full-stack cybersecurity & decision-support intelligence platform utilizing Natural Language Processing (NLP), statistical Machine Learning, and Explainable AI (XAI) to protect job seekers from employment scams, identity theft, and advance-fee fraud.*
 
@@ -93,19 +92,6 @@ npm run dev
 ```
 
 Open your browser at `http://localhost:5173`.
-
----
-
-## 🔑 Pre-Configured Presentation Accounts
-
-The database automatically seeds default demonstration accounts with sample analyses on first startup:
-
-| Account Type | Email | Password | Role & Permissions |
-| :--- | :--- | :--- | :--- |
-| **Security Admin** | `admin@safehire.io` | `Admin@123456` | Full Access: User Management, DB Audit Logs, ML Retraining & Telemetry |
-| **Standard User** | `user@safehire.io` | `User@123456` | Job Scanning, Analysis History, Bookmarks, Audit Certificates |
-
-*Or register your own custom account directly from the `/register` page.*
 
 ---
 
